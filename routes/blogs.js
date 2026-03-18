@@ -9,7 +9,7 @@ router.get('/', async function (req, res, next) {
     let result = await blogController.GetAllBlog();
     res.send(result)
 })
-router.post('/', CheckLogin, checkRole('admin', 'staff'), CreateBlogValidator, validatedResult, async function (req, res, next) {
+router.post('/', CheckLogin, checkRole('admin'), CreateBlogValidator, validatedResult, async function (req, res, next) {
     let { title, content, thumbnail, category, tags } = req.body;
     let result = await blogController.CreateBlog(title, content, thumbnail, category, req.user._id, tags);
     res.send(result)
@@ -22,7 +22,7 @@ router.get('/:slug', async function (req, res, next) {
         res.send(result)
     }
 })
-router.put('/:id', CheckLogin, checkRole('admin', 'staff'), async function (req, res, next) {
+router.put('/:id', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await blogController.UpdateBlog(req.params.id, req.body);
     if (!result) {
         res.status(404).send("khong tim thay bai viet")

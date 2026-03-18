@@ -1,15 +1,22 @@
 var express = require("express");
 var router = express.Router();
 let bookingController = require('../controllers/bookings')
-let { CheckLogin, checkRole } = require('../utils/authHandler')
+let { CheckLogin, checkRole, checkHotelOwner } = require('../utils/authHandler')
 let { CreateBookingValidator, validatedResult } = require('../utils/validator')
 
+// Customer: xem booking cua minh
 router.get('/my-bookings', CheckLogin, async function (req, res, next) {
     let result = await bookingController.GetMyBookings(req.user._id);
     res.send(result)
 })
-router.get('/', CheckLogin, checkRole('admin', 'staff'), async function (req, res, next) {
+// Admin: xem tat ca booking
+router.get('/', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await bookingController.GetAllBooking();
+    res.send(result)
+})
+// Hotel Owner: xem booking cua hotel minh
+router.get('/hotel/:hotelId', CheckLogin, checkRole('hotel_owner', 'admin'), checkHotelOwner, async function (req, res, next) {
+    let result = await bookingController.GetBookingsByHotel(req.params.hotelId);
     res.send(result)
 })
 router.get('/:id', CheckLogin, async function (req, res, next) {
@@ -20,14 +27,16 @@ router.get('/:id', CheckLogin, async function (req, res, next) {
         res.send(result)
     }
 })
+// Customer: dat phong
 router.post('/', CheckLogin, checkRole('customer'), CreateBookingValidator, validatedResult, async function (req, res, next) {
-    let { room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount } = req.body;
+    let { hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount } = req.body;
     let result = await bookingController.CreateBooking(
-        req.user._id, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount
+        req.user._id, hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount
     );
     res.send(result)
 })
-router.patch('/:id/confirm', CheckLogin, checkRole('admin', 'staff'), async function (req, res, next) {
+// Hotel Owner: xac nhan booking
+router.patch('/:id/confirm', CheckLogin, checkRole('hotel_owner', 'admin'), async function (req, res, next) {
     let result = await bookingController.ConfirmBooking(req.params.id);
     if (!result) {
         res.status(404).send("khong the xac nhan booking")
@@ -35,7 +44,7 @@ router.patch('/:id/confirm', CheckLogin, checkRole('admin', 'staff'), async func
         res.send(result)
     }
 })
-router.patch('/:id/check-in', CheckLogin, checkRole('admin', 'staff'), async function (req, res, next) {
+router.patch('/:id/check-in', CheckLogin, checkRole('hotel_owner', 'admin'), async function (req, res, next) {
     let result = await bookingController.CheckIn(req.params.id);
     if (!result) {
         res.status(404).send("khong the check-in")
@@ -43,7 +52,7 @@ router.patch('/:id/check-in', CheckLogin, checkRole('admin', 'staff'), async fun
         res.send(result)
     }
 })
-router.patch('/:id/check-out', CheckLogin, checkRole('admin', 'staff'), async function (req, res, next) {
+router.patch('/:id/check-out', CheckLogin, checkRole('hotel_owner', 'admin'), async function (req, res, next) {
     let result = await bookingController.CheckOut(req.params.id);
     if (!result) {
         res.status(404).send("khong the check-out")

@@ -1,9 +1,22 @@
-// === Schema: Amenity ===
-var mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const amenitySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Amenity name is required"]
+    },
+    icon: {
+      type: String,
+      default: ""
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false
+    }
+  },
+  {
+    timestamps: true
+  }
+);
 
-var amenitySchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  icon: { type: String }
-}, { timestamps: true });
-
-module.exports = mongoose.model('Amenity', amenitySchema);
+module.exports = mongoose.model("amenity", amenitySchema);
