@@ -31,9 +31,28 @@ app.use('/api/v1/promotions', require('./routes/promotions'));
 app.use('/api/v1/blogs', require('./routes/blogs'));
 app.use('/api/v1/stats', require('./routes/stats'));
 
+let roleModel = require('./schemas/Role')
+
+async function seedRoles() {
+  let defaultRoles = [
+    { name: 'admin', description: 'Quan tri vien he thong' },
+    { name: 'hotel_owner', description: 'Chu so huu khach san' },
+    { name: 'customer', description: 'Khach hang' }
+  ];
+  for (let role of defaultRoles) {
+    let exists = await roleModel.findOne({ name: role.name });
+    if (!exists) {
+      await roleModel.create(role);
+      console.log(`Created role: ${role.name}`);
+    }
+  }
+  console.log('Roles seeded successfully');
+}
+
 mongoose.connect('mongodb://localhost:27017/hotel_booking');
-mongoose.connection.on('connected', () => {
+mongoose.connection.on('connected', async () => {
   console.log("connected");
+  await seedRoles();
 })
 mongoose.connection.on('disconnected', () => {
   console.log("disconnected");
@@ -46,11 +65,10 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json({
+    message: err.message,
+    error: req.app.get('env') === 'development' ? err.stack : {}
+  });
 });
 
 module.exports = app;
