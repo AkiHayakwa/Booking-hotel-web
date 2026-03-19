@@ -1,56 +1,56 @@
+var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var cors = require('cors');
-require('dotenv').config();
-
-// Connect Database
-var db = require('./utils/db');
+let mongoose = require('mongoose')
 
 var app = express();
 
-// Middlewares
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
-var authRouter = require('./routes/auth');
-var usersRouter = require('./routes/users');
-var roomTypesRouter = require('./routes/roomTypes');
-var roomsRouter = require('./routes/rooms');
-var bookingsRouter = require('./routes/bookings');
-var paymentsRouter = require('./routes/payments');
-var reviewsRouter = require('./routes/reviews');
-var amenitiesRouter = require('./routes/amenities');
-var promotionsRouter = require('./routes/promotions');
-var blogsRouter = require('./routes/blogs');
-var statsRouter = require('./routes/stats');
+app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/users', require('./routes/users'));
+app.use('/api/v1/roles', require('./routes/roles'));
+app.use('/api/v1/hotels', require('./routes/hotels'));
+app.use('/api/v1/room-types', require('./routes/roomTypes'));
+app.use('/api/v1/rooms', require('./routes/rooms'));
+app.use('/api/v1/bookings', require('./routes/bookings'));
+app.use('/api/v1/payments', require('./routes/payments'));
+app.use('/api/v1/reviews', require('./routes/reviews'));
+app.use('/api/v1/amenities', require('./routes/amenities'));
+app.use('/api/v1/promotions', require('./routes/promotions'));
+app.use('/api/v1/blogs', require('./routes/blogs'));
+app.use('/api/v1/stats', require('./routes/stats'));
 
-app.use('/api/auth', authRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/room-types', roomTypesRouter);
-app.use('/api/rooms', roomsRouter);
-app.use('/api/bookings', bookingsRouter);
-app.use('/api/payments', paymentsRouter);
-app.use('/api/reviews', reviewsRouter);
-app.use('/api/amenities', amenitiesRouter);
-app.use('/api/promotions', promotionsRouter);
-app.use('/api/blogs', blogsRouter);
-app.use('/api/stats', statsRouter);
+mongoose.connect('mongodb://localhost:27017/hotel_booking');
+mongoose.connection.on('connected', () => {
+  console.log("connected");
+})
+mongoose.connection.on('disconnected', () => {
+  console.log("disconnected");
+})
 
-// Error handler
+// catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  res.status(404).json({ message: 'Route not found' });
+  next(createError(404));
 });
 
+// error handler
 app.use(function(err, req, res, next) {
-  console.error(err.stack);
-  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;
