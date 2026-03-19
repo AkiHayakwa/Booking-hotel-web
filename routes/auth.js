@@ -22,9 +22,9 @@ router.post('/login', async function (req, res, next) {
     }
 })
 router.post('/register', RegisterValidator, validatedResult, async function (req, res, next) {
-    let { username, password, email } = req.body;
+    let { username, password, email, role } = req.body;
     let newUser = await userController.CreateAnUser(
-        username, password, email, '000000000000000000000003'
+        username, password, email, role
     )
     res.send(newUser)
 })

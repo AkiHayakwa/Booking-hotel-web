@@ -20,7 +20,7 @@ const blogSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['news', 'travel_tips', 'hotel_info', 'promotion'],
+      enum: ['news', 'travel_tips', 'hotel_info', 'promotion', 'review'],
       default: 'news'
     },
     author: {
