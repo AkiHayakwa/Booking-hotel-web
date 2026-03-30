@@ -8,6 +8,9 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import OtpVerifyPage from './pages/OtpVerifyPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import HomePage from './pages/HomePage';
+import PromotionsPage from './pages/PromotionsPage';
+import HotelsPage from './pages/HotelsPage';
+import BlogPage from './pages/BlogPage';
 import './index.css';
 
 function App() {
@@ -23,6 +26,9 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/verify-otp" element={<OtpVerifyPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/promotions" element={<PromotionsPage />} />
+            <Route path="/hotels" element={<HotelsPage />} />
+            <Route path="/blog" element={<BlogPage />} />
           </Routes>
           <Footer />
         </div>

@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './HomePage.css';
 
-const DESTINATIONS = [
-  'TP. Hồ Chí Minh', 'Đà Nẵng', 'Đà Lạt', 'Nha Trang', 'Hà Nội',
-  'Hội An', 'Cần Thơ', 'Phú Quốc', 'Vũng Tàu', 'Tây Ninh', 
-  'Hạ Long', 'Sapa', 'Huế', 'Quy Nhơn', 'Tuy Hòa', 'Đồng Nai', 'Bình Dương'
+const PROVINCES_VN = [
+  "An Giang", "Bà Rịa - Vũng Tàu", "Bạc Liêu", "Bắc Giang", "Bắc Kạn", "Bắc Ninh", "Bến Tre", "Bình Dương", "Bình Định", "Bình Phước", "Bình Thuận", "Cà Mau", "Cao Bằng", "Cần Thơ", "Đà Nẵng", "Đắk Lắk", "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp", "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội", "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang", "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang", "Kon Tum", "Lai Châu", "Lạng Sơn", "Lào Cai", "Lâm Đồng", "Long An", "Nam Định", "Nghệ An", "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên", "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh", "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế", "Tiền Giang", "TP. Hồ Chí Minh", "Trà Vinh", "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái"
+];
+
+const TRENDING_DESTINATIONS = [
+  "TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Đà Lạt", "Nha Trang", "Phú Quốc", "Vũng Tàu", "Hội An"
 ];
 
 export default function HomePage() {
@@ -24,8 +26,7 @@ export default function HomePage() {
   const [checkIn, setCheckIn] = useState(today);
   const [checkOut, setCheckOut] = useState(tomorrow);
 
-  const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
+  const [guests, setGuests] = useState(2);
   const [rooms, setRooms] = useState(1);
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
 
@@ -48,9 +49,11 @@ export default function HomePage() {
     };
   }, []);
 
-  const filteredDestinations = DESTINATIONS.filter(item =>
-    item.toLowerCase().includes(destQuery.toLowerCase())
-  );
+  const filteredDestinations = destQuery.length === 0 
+    ? TRENDING_DESTINATIONS 
+    : PROVINCES_VN.filter(item =>
+        item.toLowerCase().includes(destQuery.toLowerCase())
+      );
 
   return (
     <main>
@@ -178,7 +181,7 @@ export default function HomePage() {
               <div className="hp-booking-input-wrapper" onClick={() => setShowGuestDropdown(!showGuestDropdown)} style={{cursor: 'pointer'}}>
                 <span className="material-symbols-outlined hp-booking-icon">group</span>
                 <div className="hp-booking-input hp-fake-input">
-                  {adults} người lớn · {children} trẻ em · {rooms} phòng
+                  {guests} người · {rooms} phòng
                 </div>
                 <span className="material-symbols-outlined hp-dropdown-caret">expand_more</span>
               </div>
@@ -187,33 +190,17 @@ export default function HomePage() {
               {showGuestDropdown && (
                 <div className="hp-dropdown hp-dropdown--guest">
                   <div className="hp-guest-row">
-                    <span className="hp-guest-label">Người lớn</span>
+                    <span className="hp-guest-label">Số người</span>
                     <div className="hp-counter">
                       <button 
                         className="hp-counter-btn" 
-                        onClick={() => setAdults(prev => Math.max(1, prev - 1))}
-                        disabled={adults <= 1}
+                        onClick={() => setGuests(prev => Math.max(1, prev - 1))}
+                        disabled={guests <= 1}
                       >−</button>
-                      <span className="hp-counter-val">{adults}</span>
+                      <span className="hp-counter-val">{guests}</span>
                       <button 
                         className="hp-counter-btn" 
-                        onClick={() => setAdults(prev => prev + 1)}
-                      >+</button>
-                    </div>
-                  </div>
-
-                  <div className="hp-guest-row">
-                    <span className="hp-guest-label">Trẻ em</span>
-                    <div className="hp-counter">
-                      <button 
-                        className="hp-counter-btn" 
-                        onClick={() => setChildren(prev => Math.max(0, prev - 1))}
-                        disabled={children <= 0}
-                      >−</button>
-                      <span className="hp-counter-val">{children}</span>
-                      <button 
-                        className="hp-counter-btn" 
-                        onClick={() => setChildren(prev => prev + 1)}
+                        onClick={() => setGuests(prev => prev + 1)}
                       >+</button>
                     </div>
                   </div>

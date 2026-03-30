@@ -49,8 +49,11 @@
 
 .header__links {
   display: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .header__link {
