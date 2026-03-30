@@ -1,49 +1,62 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import authApi from '../api/authApi';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
+    if (!email) {
+      setError('Vui lòng nhập email');
+      return;
+    }
     setLoading(true);
-
     try {
       await authApi.forgotPassword(email);
-      setSuccess('Đã gửi link đặt lại mật khẩu vào email của bạn. Vui lòng kiểm tra hộp thư.');
+      // Chuyển sang trang OTP, truyền email + mode forgot
+      navigate('/verify-otp', { state: { email, mode: 'forgot' } });
     } catch (err) {
-      setError('Có lỗi xảy ra. Vui lòng thử lại sau.');
+      const msg = err.response?.data?.message || 'Lỗi gửi mã OTP. Vui lòng thử lại.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="login-page">
-      <div className="login-page__visual">
-        <div className="login-page__visual-overlay"></div>
+    <main className="login-wrapper">
+      {/* Left visual */}
+      <div className="login-visual">
+        <div className="login-visual__overlay"></div>
         <img
-          src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80"
-          alt="Hotel"
-          className="login-page__visual-img"
+          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80"
+          alt="Luxury Hotel"
+          className="login-visual__img"
         />
-        <div className="login-page__visual-content">
-          <h1>Đừng lo lắng</h1>
-          <p>Chúng tôi sẽ giúp bạn lấy lại quyền truy cập tài khoản một cách nhanh chóng.</p>
+        <div className="login-visual__text">
+          <h1>Khôi phục tài khoản của bạn</h1>
+          <p>Chúng tôi sẽ gửi mã OTP để giúp bạn đặt lại mật khẩu nhanh chóng.</p>
         </div>
       </div>
 
-      <div className="login-page__form-wrapper">
-        <div className="login-page__form-container">
-          <div className="login-page__heading">
+      {/* Right form */}
+      <div className="login-form-panel">
+        <div className="login-form-container">
+          <div className="otp-back">
+            <Link to="/login" className="otp-back__link">
+              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_back</span>
+              <span>Quay lại trang Đăng nhập</span>
+            </Link>
+          </div>
+
+          <div className="login-heading" style={{ textAlign: 'left' }}>
             <h2>Quên mật khẩu</h2>
-            <p>Nhập email đã đăng ký để nhận link đặt lại mật khẩu</p>
+            <p>Nhập email đã đăng ký, chúng tôi sẽ gửi mã OTP xác nhận để bạn đặt lại mật khẩu.</p>
           </div>
 
           {error && (
@@ -52,21 +65,15 @@ export default function ForgotPasswordPage() {
               {error}
             </div>
           )}
-          {success && (
-            <div className="alert alert--success">
-              <span className="material-symbols-outlined">check_circle</span>
-              {success}
-            </div>
-          )}
 
           <form className="login-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Email</label>
+            <div className="form-field">
+              <label className="form-field__label">Email</label>
               <input
                 id="forgot-email"
-                className="form-input"
+                className="form-field__input"
                 type="email"
-                placeholder="Nhập địa chỉ email đã đăng ký"
+                placeholder="Nhập email đã đăng ký"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -74,19 +81,19 @@ export default function ForgotPasswordPage() {
             </div>
 
             <button
-              id="forgot-submit"
-              className="btn btn--primary btn--full btn--lg"
+              className="login-submit-btn"
               type="submit"
               disabled={loading}
             >
-              {loading ? <span className="btn__spinner"></span> : 'Gửi yêu cầu'}
+              {loading ? <span className="login-spinner"></span> : 'Gửi mã OTP'}
             </button>
           </form>
 
-          <div className="login-page__footer-links">
-            <Link to="/login" className="link link--accent">
-              ← Quay lại trang đăng nhập
-            </Link>
+          <div className="login-footer-links">
+            <p className="login-footer-links__register">
+              Nhớ mật khẩu rồi?{' '}
+              <Link to="/login" className="login-footer-links__register-link">Đăng nhập ngay</Link>
+            </p>
           </div>
         </div>
       </div>

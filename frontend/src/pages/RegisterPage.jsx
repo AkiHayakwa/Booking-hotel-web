@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import axiosClient from '../api/axiosClient';
+import authApi from '../api/authApi';
+import './RegisterPage.css';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -9,24 +9,11 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
     email: '',
-    role: '',
   });
-  const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    axiosClient.get('/roles').then(res => {
-      const filtered = res.data.filter(r => r.name !== 'admin');
-      setRoles(filtered);
-      if (filtered.length > 0) {
-        setForm(prev => ({ ...prev, role: filtered[0]._id }));
-      }
-    }).catch(() => { });
-  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,7 +22,6 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     if (form.password !== form.confirmPassword) {
       setError('Mật khẩu xác nhận không khớp');
@@ -44,20 +30,22 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await axiosClient.post('/auth/register', {
+      // Gửi OTP thay vì đăng ký trực tiếp
+      await authApi.sendOtp({
         username: form.username,
         password: form.password,
         email: form.email,
-        role: form.role,
       });
-      setSuccess('Đăng ký thành công! Đang chuyển trang đăng nhập...');
-      setTimeout(() => navigate('/login'), 2000);
+      // Chuyển sang trang OTP, truyền email qua state
+      navigate('/verify-otp', { state: { email: form.email } });
     } catch (err) {
       const msg = err.response?.data;
       if (typeof msg === 'string') {
         setError(msg);
-      } else if (msg?.errors) {
-        setError(msg.errors.map(e => e.msg).join('. '));
+      } else if (msg?.message) {
+        setError(msg.message);
+      } else if (Array.isArray(msg)) {
+        setError(msg.map(e => Object.values(e)[0]).join('. '));
       } else {
         setError('Đăng ký thất bại. Vui lòng thử lại.');
       }
@@ -67,25 +55,25 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="login-page">
+    <main className="login-wrapper">
       {/* Left visual panel */}
-      <div className="login-page__visual">
-        <div className="login-page__visual-overlay"></div>
+      <div className="login-visual">
+        <div className="login-visual__overlay"></div>
         <img
           src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1200&q=80"
           alt="Hotel Resort"
-          className="login-page__visual-img"
+          className="login-visual__img"
         />
-        <div className="login-page__visual-content">
+        <div className="login-visual__text">
           <h1>Trải nghiệm nghỉ dưỡng đẳng cấp</h1>
           <p>Tạo tài khoản để khám phá những ưu đãi độc quyền và quản lý chuyến đi dễ dàng hơn.</p>
         </div>
       </div>
 
       {/* Right form panel */}
-      <div className="login-page__form-wrapper">
-        <div className="login-page__form-container">
-          <div className="login-page__heading">
+      <div className="login-form-panel">
+        <div className="login-form-container">
+          <div className="login-heading">
             <h2>Tạo tài khoản mới</h2>
             <p>Đăng ký miễn phí và bắt đầu hành trình của bạn</p>
           </div>
@@ -96,19 +84,13 @@ export default function RegisterPage() {
               {error}
             </div>
           )}
-          {success && (
-            <div className="alert alert--success">
-              <span className="material-symbols-outlined">check_circle</span>
-              {success}
-            </div>
-          )}
 
           <form className="login-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Tên đăng nhập</label>
+            <div className="form-field">
+              <label className="form-field__label">Tên đăng nhập</label>
               <input
                 id="register-username"
-                className="form-input"
+                className="form-field__input"
                 type="text"
                 name="username"
                 placeholder="Nhập tên đăng nhập"
@@ -118,11 +100,11 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Email</label>
+            <div className="form-field">
+              <label className="form-field__label">Email</label>
               <input
                 id="register-email"
-                className="form-input"
+                className="form-field__input"
                 type="email"
                 name="email"
                 placeholder="Nhập địa chỉ email"
@@ -132,54 +114,36 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Vai trò</label>
-              <select
-                id="register-role"
-                className="form-input"
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                required
-              >
-                {roles.map((r) => (
-                  <option key={r._id} value={r._id}>
-                    {r.name === 'customer' ? 'Khách hàng' : r.name === 'hotel_owner' ? 'Chủ khách sạn' : r.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Mật khẩu</label>
-              <div className="form-input-wrapper">
+            <div className="form-field">
+              <label className="form-field__label">Mật khẩu</label>
+              <div className="form-field__input-wrap">
                 <input
                   id="register-password"
-                  className="form-input form-input--has-icon"
+                  className="form-field__input form-field__input--icon"
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
+                  placeholder="Ít nhất 8 ký tự (chữ hoa, thường, số, đặc biệt)"
                   value={form.password}
                   onChange={handleChange}
                   required
                 />
                 <button
                   type="button"
-                  className="form-input-icon"
+                  className="form-field__toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  <span className="material-symbols-outlined">
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                     {showPassword ? 'visibility_off' : 'visibility'}
                   </span>
                 </button>
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Xác nhận mật khẩu</label>
+            <div className="form-field">
+              <label className="form-field__label">Xác nhận mật khẩu</label>
               <input
                 id="register-confirm-password"
-                className="form-input"
+                className="form-field__input"
                 type="password"
                 name="confirmPassword"
                 placeholder="Nhập lại mật khẩu"
@@ -191,18 +155,18 @@ export default function RegisterPage() {
 
             <button
               id="register-submit"
-              className="btn btn--primary btn--full btn--lg"
+              className="login-submit-btn"
               type="submit"
               disabled={loading}
             >
-              {loading ? <span className="btn__spinner"></span> : 'Đăng ký'}
+              {loading ? <span className="login-spinner"></span> : 'Đăng ký'}
             </button>
           </form>
 
-          <div className="login-page__footer-links">
-            <p>
+          <div className="login-footer-links">
+            <p className="login-footer-links__register">
               Đã có tài khoản?{' '}
-              <Link to="/login" className="link link--accent">Đăng nhập ngay</Link>
+              <Link to="/login" className="login-footer-links__register-link">Đăng nhập ngay</Link>
             </p>
           </div>
         </div>
