@@ -49,7 +49,11 @@ const userSchema = new mongoose.Schema(
     },
     lockTime: Date,
     forgotPasswordToken: String,
-    forgotPasswordTokenExp: Date
+    forgotPasswordTokenExp: Date,
+    googleId: {
+      type: String,
+      default: null
+    }
   },
   {
     timestamps: true

@@ -93,8 +93,12 @@ module.exports = {
         if (!username || !password) {
             return false;
         }
+        // Cho phép đăng nhập bằng username hoặc email
         let user = await userModel.findOne({
-            username: username,
+            $or: [
+                { username: username },
+                { email: username.toLowerCase() }
+            ],
             isDeleted: false
         })
         if (user) {
