@@ -1,0 +1,16 @@
+/* ============================================
+   LuxStay Booking — Blog Page Styles
+   ============================================ */
+
+.gold-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, #fbeba5 100%);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
