@@ -9,11 +9,11 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  const handleLogout = async (e) => {
+  const handleLogout = (e) => {
     e.preventDefault();
-    await logout();
+    logout();                          // Xóa token + set user = null (đồng bộ)
     setShowDropdown(false);
-    navigate('/login');
+    window.location.href = '/login';   // Reload trang để Header reset hoàn toàn
   };
 
   useEffect(() => {

@@ -46,10 +46,7 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
-  const logout = async () => {
-    try {
-      await authApi.logout();
-    } catch (e) { /* ignore */ }
+  const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
   };
