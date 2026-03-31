@@ -40,4 +40,9 @@ router.patch('/:id/toggle-active', CheckLogin, checkRole('admin'), async functio
     }
 })
 
+router.get('/by-role/:roleName', CheckLogin, checkRole('admin'), async function (req, res, next) {
+    let result = await userController.GetUsersByRoleName(req.params.roleName);
+    res.send(result)
+})
+
 module.exports = router;

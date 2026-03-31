@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import hotelApi from '../api/hotelApi';
 import statsApi from '../api/statsApi';
+import userApi from '../api/userApi';
+import { useAuth } from '../context/AuthContext';
 import './AdminHotelsPage.css';
 
 const TABS = ['All Hotels', 'Active', 'Pending', 'Maintenance'];
 
 export default function AdminHotelsPage() {
+  const { user: currentUser } = useAuth();
   const [hotels, setHotels] = useState([]);
+  const [owners, setOwners] = useState([]);
   const [stats, setStats] = useState({
     total: 0, approved: 0, pending: 0
   });
@@ -21,7 +25,8 @@ export default function AdminHotelsPage() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [formData, setFormData] = useState({
     _id: '', name: '', description: '', address: '', 
-    city: 'Da Nang', phone: '', email: '', imageUrl: ''
+    city: 'Da Nang', phone: '', email: '', imageUrl: '',
+    owner: ''
   });
 
   const fetchData = async () => {
@@ -47,9 +52,21 @@ export default function AdminHotelsPage() {
     }
   };
 
+  const fetchOwners = async () => {
+    try {
+      const res = await userApi.getByRole('hotel_owner');
+      if (res.data) setOwners(res.data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách chủ sở hữu:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
-  }, []);
+    if (currentUser?.role?.name === 'admin') {
+      fetchOwners();
+    }
+  }, [currentUser]);
 
   const SUMMARY_STATS = [
     { icon: 'domain',       cls: 'accent',   label: 'Total Hotels',      value: stats.total.toLocaleString(), badge: '+4.2%', up: true },
@@ -94,7 +111,8 @@ export default function AdminHotelsPage() {
     setIsEdit(false);
     setFormData({ 
       _id: '', name: '', description: '', address: '', 
-      city: 'Da Nang', phone: '', email: '', imageUrl: '' 
+      city: 'Da Nang', phone: '', email: '', imageUrl: '',
+      owner: '' 
     });
     setShowModal(true);
   };
@@ -109,7 +127,8 @@ export default function AdminHotelsPage() {
       city: hotel.city || 'Da Nang',
       phone: hotel.phone || '',
       email: hotel.email || '',
-      imageUrl: hotel.images?.[0] || ''
+      imageUrl: hotel.images?.[0] || '',
+      owner: hotel.owner?._id || hotel.owner || ''
     });
     setShowModal(true);
   };
@@ -129,7 +148,8 @@ export default function AdminHotelsPage() {
       city: formData.city,
       phone: formData.phone,
       email: formData.email,
-      images: formData.imageUrl ? [formData.imageUrl] : []
+      images: formData.imageUrl ? [formData.imageUrl] : [],
+      owner: formData.owner
     };
 
     try {
@@ -321,6 +341,23 @@ export default function AdminHotelsPage() {
             </div>
             
             <form onSubmit={handleSaveHotel}>
+              {currentUser?.role?.name === 'admin' && (
+                <div className="admin-form-group">
+                  <label className="admin-form-label">Hotel Owner *</label>
+                  <select 
+                    name="owner" className="admin-form-select" 
+                    value={formData.owner} onChange={handleChange} required
+                  >
+                    <option value="">-- Choose Hotel Owner --</option>
+                    {owners.map(o => (
+                      <option key={o._id} value={o._id}>
+                        {o.fullName || o.username} ({o.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="admin-form-group">
                 <label className="admin-form-label">Hotel Name *</label>
                 <input 

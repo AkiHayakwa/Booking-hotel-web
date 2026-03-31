@@ -19,6 +19,9 @@ const userApi = {
   delete: (id) => {
     return axiosClient.delete(`/users/${id}`);
   },
+  getByRole: (roleName) => {
+    return axiosClient.get(`/users/by-role/${roleName}`);
+  },
 };
 
 export default userApi;
