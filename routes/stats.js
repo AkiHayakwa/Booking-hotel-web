@@ -13,6 +13,14 @@ router.get('/revenue', CheckLogin, checkRole('admin'), async function (req, res,
         res.send(result)
     }
 })
+router.get('/admin-overview', CheckLogin, checkRole('admin'), async function (req, res, next) {
+    let result = await statsController.GetAdminDashboardStats();
+    if (!result) {
+        res.status(400).send("Lỗi khi lấy thống kê tổng quan");
+    } else {
+        res.send(result);
+    }
+})
 router.get('/bookings', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await statsController.GetBookingStats();
     if (!result) {

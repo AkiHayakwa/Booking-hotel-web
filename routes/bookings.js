@@ -29,11 +29,18 @@ router.get('/:id', CheckLogin, async function (req, res, next) {
 })
 // Customer: dat phong
 router.post('/', CheckLogin, checkRole('customer'), CreateBookingValidator, validatedResult, async function (req, res, next) {
-    let { hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount } = req.body;
-    let result = await bookingController.CreateBooking(
-        req.user._id, hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount
-    );
-    res.send(result)
+    try {
+        let { hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount } = req.body;
+        let result = await bookingController.CreateBooking(
+            req.user._id, hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount
+        );
+        if (result.error) {
+            return res.status(400).json({ message: result.error });
+        }
+        res.send(result);
+    } catch (error) {
+        next(error);
+    }
 })
 // Hotel Owner: xac nhan booking
 router.patch('/:id/confirm', CheckLogin, checkRole('hotel_owner', 'admin'), async function (req, res, next) {

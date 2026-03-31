@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: '',
+        client_id: '1013000990444-qr0dm8d2rq3vih6ihser20hq3ti9ifig.apps.googleusercontent.com',
         callback: window.handleGoogleCallBackResponse
       });
       window.google.accounts.id.renderButton(
@@ -45,8 +45,13 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login(username, password);
-      navigate('/');
+      const user = await login(username, password);
+      // Kiểm tra nếu là admin thì chuyển hướng vào dashboard admin
+      if (user && user.role && user.role.name === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       const msg = err.response?.data || 'Đăng nhập thất bại. Kiểm tra lại thông tin.';
       setError(typeof msg === 'string' ? msg : msg.message || 'Đăng nhập thất bại');
