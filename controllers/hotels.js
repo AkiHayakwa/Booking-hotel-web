@@ -1,17 +1,17 @@
 let hotelModel = require("../schemas/Hotel");
 
 module.exports = {
-    CreateHotel: async function (name, description, address, city, images, phone, email, ownerId, amenities) {
+    CreateHotel: async function (data) {
         let newItem = new hotelModel({
-            name: name,
-            description: description || "",
-            address: address,
-            city: city,
-            images: images || [],
-            phone: phone || "",
-            email: email || "",
-            owner: ownerId,
-            amenities: amenities || []
+            name: data.name,
+            description: data.description || "",
+            address: data.address,
+            city: data.city,
+            images: data.images || [],
+            phone: data.phone || "",
+            email: data.email || "",
+            owner: data.ownerId,
+            amenities: data.amenities || []
         });
         await newItem.save();
         return newItem;

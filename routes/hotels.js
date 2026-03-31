@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 let hotelController = require('../controllers/hotels')
 let { CheckLogin, checkRole, checkHotelOwner } = require('../utils/authHandler')
+let { CreateHotelValidator, validatedResult } = require('../utils/validator')
 
 // Public: lay tat ca hotel da duyet
 router.get('/', async function (req, res, next) {
@@ -44,10 +45,20 @@ router.get('/:id', async function (req, res, next) {
     }
 })
 // Admin + Hotel Owner: tao hotel moi (cho duyet)
-router.post('/', CheckLogin, checkRole('admin', 'hotel_owner'), async function (req, res, next) {
-    let { name, description, address, city, images, phone, email, amenities } = req.body;
-    let result = await hotelController.CreateHotel(name, description, address, city, images, phone, email, req.user._id, amenities);
-    res.send(result)
+router.post('/', CheckLogin, checkRole('admin', 'hotel_owner'), CreateHotelValidator, validatedResult, async function (req, res, next) {
+    try {
+        let { name, description, address, city, images, phone, email, amenities, owner } = req.body;
+        let ownerId = req.user._id;
+        if (req.user.role.name === 'admin' && owner) {
+            ownerId = owner;
+        }
+        let result = await hotelController.CreateHotel({
+            name, description, address, city, images, phone, email, ownerId, amenities
+        });
+        res.send(result)
+    } catch (error) {
+        res.status(400).send({ message: error.message || "Loi khi tao khach san" })
+    }
 })
 // Hotel Owner: cap nhat hotel cua minh
 router.put('/:hotelId', CheckLogin, checkRole('hotel_owner', 'admin'), checkHotelOwner, async function (req, res, next) {

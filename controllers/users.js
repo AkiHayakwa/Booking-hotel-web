@@ -1,4 +1,5 @@
 let userModel = require("../schemas/User");
+let roleModel = require("../schemas/Role");
 let bcrypt = require('bcrypt')
 let jwt = require('jsonwebtoken')
 
@@ -135,6 +136,15 @@ module.exports = {
             return true;
         } else {
             return false;
+        }
+    },
+    GetUsersByRoleName: async function (roleName) {
+        try {
+            let role = await roleModel.findOne({ name: roleName, isDeleted: false });
+            if (!role) return [];
+            return await userModel.find({ role: role._id, isDeleted: false }).populate('role');
+        } catch (error) {
+            return [];
         }
     }
 }
