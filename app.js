@@ -38,6 +38,7 @@ app.use('/api/v1/blogs', require('./routes/blogs'));
 app.use('/api/v1/stats', require('./routes/stats'));
 
 let roleModel = require('./schemas/Role')
+let userModel = require('./schemas/User')
 
 async function seedRoles() {
   let defaultRoles = [
@@ -55,22 +56,53 @@ async function seedRoles() {
   console.log('Roles seeded successfully');
 }
 
+async function seedAdmin() {
+  // Tìm role admin
+  const adminRole = await roleModel.findOne({ name: 'admin' });
+  if (!adminRole) return;
+
+  // Kiểm tra đã có admin chưa
+  const exists = await userModel.findOne({ email: 'admin@luxstay.com' });
+  if (exists) {
+    console.log('Admin account already exists');
+    return;
+  }
+
+  // Tạo tài khoản admin (password sẽ tự hash qua pre-save hook)
+  await userModel.create({
+    username: 'admin',
+    email: 'admin@luxstay.com',
+    password: 'Admin@123',
+    fullName: 'Super Admin',
+    phone: '+84 24 1234 5678',
+    role: adminRole._id,
+    status: true,   // kích hoạt luôn, không cần verify OTP
+    loginCount: 0
+  });
+
+  console.log('========================================');
+  console.log('✅ Admin account created!');
+  console.log('   Email   : admin@luxstay.com');
+  console.log('   Password: Admin@123');
+  console.log('========================================');
+}
+
 mongoose.connect('mongodb://localhost:27017/hotel_booking');
 mongoose.connection.on('connected', async () => {
   console.log("connected");
-  await seedRoles();
+  // Đã xóa dữ liệu tạo mẫu (seedRoles, seedAdmin) theo yêu cầu
 })
 mongoose.connection.on('disconnected', () => {
   console.log("disconnected");
 })
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500).json({
     message: err.message,
     error: req.app.get('env') === 'development' ? err.stack : {}

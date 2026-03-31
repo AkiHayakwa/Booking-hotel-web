@@ -1,0 +1,57 @@
+/* ── Filter Bar ─────────────────────────── */
+.bk-filter-bar {
+  background: var(--white); border-radius: var(--radius-xl);
+  border: 1px solid rgba(0,31,61,0.1); box-shadow: var(--shadow-sm);
+  padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+  display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;
+}
+.bk-filter-bar__item { display: flex; flex-direction: column; gap: 0.35rem; }
+.bk-filter-bar__item--grow { flex: 1; min-width: 220px; }
+.bk-filter-bar__item--btn { justify-content: flex-end; }
+
+.bk-filter-label { font-size: 0.6875rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.bk-filter-input-wrap { position: relative; }
+.bk-filter-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.1rem; pointer-events: none; }
+.bk-filter-input {
+  width: 100%; height: 2.375rem; padding: 0 0.875rem 0 2.5rem;
+  border: 1.5px solid rgba(0,31,61,0.15); border-radius: var(--radius-lg);
+  font-size: 0.8125rem; font-family: var(--font); color: var(--text-dark);
+  background: #f8fafc; outline: none; transition: var(--transition);
+}
+.bk-filter-input:not(.bk-filter-input-wrap .bk-filter-input) { padding-left: 0.875rem; }
+select.bk-filter-input { padding-left: 0.875rem; cursor: pointer; width: 170px; }
+.bk-filter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(212,175,55,0.15); }
+
+.bk-apply-btn {
+  height: 2.375rem; padding: 0 1.25rem;
+  background: var(--primary); color: var(--white);
+  border: none; border-radius: var(--radius-lg);
+  font-size: 0.8125rem; font-weight: 700; font-family: var(--font);
+  cursor: pointer; display: flex; align-items: center; gap: 0.375rem;
+  transition: var(--transition);
+}
+.bk-apply-btn:hover { background: var(--primary-hover); }
+.bk-apply-btn .material-symbols-outlined { font-size: 1rem; }
+
+/* ── Table Cells ────────────────────────── */
+.bk-id { font-weight: 700; color: var(--primary); white-space: nowrap; }
+
+.bk-customer { display: flex; align-items: center; gap: 0.625rem; }
+.bk-customer__initials {
+  width: 2rem; height: 2rem; border-radius: 50%;
+  background: #e2e8f0; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 800; color: #475569; flex-shrink: 0;
+}
+.bk-customer__name  { font-size: 0.875rem; font-weight: 700; color: var(--text-dark); }
+.bk-customer__email { font-size: 0.7rem; color: #94a3b8; }
+
+.bk-hotel-name { font-size: 0.875rem; font-weight: 600; color: var(--text-dark); }
+.bk-hotel-room { font-size: 0.7rem; color: #94a3b8; }
+
+.bk-dates  { font-size: 0.875rem; color: #475569; white-space: nowrap; }
+.bk-nights { font-size: 0.7rem; color: #94a3b8; }
+
+.bk-price { font-weight: 800; color: var(--primary); }
+
+.admin-table-wrap { overflow-x: auto; }

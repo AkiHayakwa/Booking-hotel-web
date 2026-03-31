@@ -11,28 +11,16 @@ let jwt = require('jsonwebtoken')
 let bcrypt = require('bcrypt')
 const { OAuth2Client } = require('google-auth-library')
 
-const GOOGLE_CLIENT_ID = ''; // ĐIỀN GOOGLE CLIENT ID VÀO ĐÂY
+let authController = require('../controllers/auth')
+const GOOGLE_CLIENT_ID = '1013000990444-qr0dm8d2rq3vih6ihser20hq3ti9ifig.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // Lưu OTP tạm trong bộ nhớ (Map)
 // Key: email, Value: { otp, username, password, expiredAt }
 const otpStore = new Map();
 
-//login
-router.post('/login', async function (req, res, next) {
-    let { username, password } = req.body;
-    let result = await userController.QueryLogin(username, password);
-    if (!result) {
-        res.status(404).send("thong tin dang nhap khong dung")
-    } else {
-        res.cookie("TOKEN_HOTEL", result, {
-            maxAge: 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: false
-        })
-        res.send(result)
-    }
-})
+// Đăng nhập
+router.post('/login', authController.login);
 
 // Đăng nhập bằng Google
 router.post('/google', async function (req, res, next) {
@@ -244,18 +232,11 @@ router.post('/resend-otp', async function (req, res, next) {
     }
 })
 
-// Giữ lại route register cũ (cho admin tạo user)
-router.post('/register', RegisterValidator, validatedResult, async function (req, res, next) {
-    let { username, password, email, role } = req.body;
-    let newUser = await userController.CreateAnUser(
-        username, password, email, role
-    )
-    res.send(newUser)
-})
+// Đăng ký tài khoản mới (sử dụng authController để xử lý cả phân quyền)
+router.post('/register', RegisterValidator, validatedResult, authController.register);
 
-router.get('/me', CheckLogin, function (req, res, next) {
-    res.send(req.user)
-})
+// Lấy thông tin phiên đăng nhập
+router.get('/me', CheckLogin, authController.getMe);
 router.post('/changepassword', CheckLogin, ChangePasswordValidator, validatedResult, async function (req, res, next) {
     let { oldpassword, newpassword } = req.body;
     let user = req.user;

@@ -78,5 +78,78 @@ module.exports = {
         } catch (error) {
             return false;
         }
+    },
+    // Hàm mới cho Admin Dashboard: Lấy tổng hợp các số liệu quan trọng
+    GetAdminDashboardStats: async function() {
+        try {
+            // 1. Thống kê Booking
+            const totalBookings = await bookingModel.countDocuments({ isDeleted: false });
+            const pendingBookings = await bookingModel.countDocuments({ isDeleted: false, status: 'pending' });
+            const confirmedBookings = await bookingModel.countDocuments({ isDeleted: false, status: 'confirmed' });
+            const cancelledBookings = await bookingModel.countDocuments({ isDeleted: false, status: 'cancelled' });
+            
+            // 2. Thống kê Doanh thu
+            const payments = await paymentModel.find({ status: 'completed', isDeleted: false });
+            const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
+            
+            // 3. Thống kê Người dùng
+            const userModel = require("../schemas/User");
+            const totalUsers = await userModel.countDocuments({ isDeleted: false });
+            const activeUsers = await userModel.countDocuments({ isDeleted: false, status: true });
+            const suspendedUsers = await userModel.countDocuments({ isDeleted: false, status: false });
+            
+            // 4. Thống kê Khách sạn
+            const totalHotels = await hotelModel.countDocuments({ isDeleted: false });
+            const approvedHotels = await hotelModel.countDocuments({ isDeleted: false, isApproved: true });
+            const pendingHotels = await hotelModel.countDocuments({ isDeleted: false, isApproved: false });
+
+            // 5. Đánh giá trung bình
+            const reviewModel = require("../schemas/Review");
+            const reviews = await reviewModel.find({ isDeleted: false });
+            const avgRating = reviews.length > 0 
+                ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+                : 0;
+
+            // 6. Top Hotels (Doanh thu cao nhất)
+            const topHotelsAgg = await bookingModel.aggregate([
+                { $match: { isDeleted: false, status: { $in: ['confirmed', 'checked_in', 'checked_out'] } } },
+                { $group: { _id: "$hotel", totalRevenue: { $sum: "$totalPrice" } } },
+                { $sort: { totalRevenue: -1 } },
+                { $limit: 4 },
+                { $lookup: { from: 'hotels', localField: '_id', foreignField: '_id', as: 'hotelInfo' } },
+                { $unwind: "$hotelInfo" },
+                { $project: { name: "$hotelInfo.name", revenue: "$totalRevenue" } }
+            ]);
+            
+            const maxRev = topHotelsAgg[0]?.revenue || 1;
+            const topHotels = topHotelsAgg.map(h => ({
+                name: h.name,
+                revenue: `$${h.revenue.toLocaleString()}`,
+                percent: Math.round((h.revenue / maxRev) * 100) || 0
+            }));
+
+            // 7. Thống kê theo danh mục (Mock or Simple) - Chúng ta chỉ có 'Khách sạn', nhưng giả lập phân loại theo số tầng phòng để Dashboard sinh động.
+            const categories = { hotels: 65, resorts: 25, villas: 10 };
+
+            return {
+                totalBookings,
+                pendingBookings,
+                confirmedBookings,
+                cancelledBookings,
+                totalRevenue,
+                totalUsers,
+                activeUsers,
+                suspendedUsers,
+                totalHotels,
+                approvedHotels,
+                pendingHotels,
+                avgRating,
+                topHotels,        // Mảng đổ vào thẻ Top Hotels
+                categories        // Đối tượng cho Donut chart
+            };
+        } catch (error) {
+            console.error("Lỗi lấy thống kê admin:", error);
+            return null;
+        }
     }
 }

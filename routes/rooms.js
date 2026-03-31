@@ -28,9 +28,17 @@ router.get('/:id', async function (req, res, next) {
     }
 })
 // Hotel Owner: tao phong cho hotel cua minh
-router.post('/:hotelId', CheckLogin, checkRole('hotel_owner', 'admin'), checkHotelOwner, CreateRoomValidator, validatedResult, async function (req, res, next) {
-    let { roomNumber, roomType, floor } = req.body;
-    let result = await roomController.CreateRoom(roomNumber, roomType, floor, req.params.hotelId);
+// Hỗ trợ cả 2 cách: qua URL hoặc qua Body
+router.post(['/', '/:hotelId'], CheckLogin, checkRole('hotel_owner', 'admin'), checkHotelOwner, CreateRoomValidator, validatedResult, async function (req, res, next) {
+    let { roomNumber, roomType, floor, hotel } = req.body;
+    // Lấy hotelId từ URL hoặc từ Body
+    let hotelId = req.params.hotelId || hotel;
+
+    if (!hotelId) {
+        return res.status(400).json({ message: "Vui lòng cung cấp Hotel ID" });
+    }
+
+    let result = await roomController.CreateRoom(roomNumber, roomType, floor, hotelId);
     res.send(result)
 })
 router.put('/:id', CheckLogin, checkRole('hotel_owner', 'admin'), async function (req, res, next) {

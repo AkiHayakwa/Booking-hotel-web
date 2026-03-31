@@ -3,29 +3,45 @@ let roomModel = require("../schemas/Room");
 
 module.exports = {
     CreateBooking: async function (userId, hotelId, roomId, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount) {
-        let room = await roomModel.findById(roomId).populate('roomType');
-        let nights = (new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24);
-        let totalPrice = room.roomType.pricePerNight * nights;
-        if (discountAmount) {
-            totalPrice = totalPrice - discountAmount;
-        }
-        let bookingCode = 'BK' + Date.now().toString(36).toUpperCase();
+        try {
+            let room = await roomModel.findById(roomId).populate('roomType');
+            if (!room) {
+                return { error: 'Không tìm thấy phòng (Room ID không hợp lệ)' };
+            }
+            if (!room.roomType) {
+                return { error: 'Phòng này chưa được gán Loại Phòng hợp lệ' };
+            }
 
-        let newItem = new bookingModel({
-            user: userId,
-            hotel: hotelId,
-            room: roomId,
-            checkInDate: checkInDate,
-            checkOutDate: checkOutDate,
-            numberOfGuests: numberOfGuests,
-            totalPrice: totalPrice,
-            specialRequests: specialRequests || "",
-            promotion: promotionId || null,
-            discountAmount: discountAmount || 0,
-            bookingCode: bookingCode
-        });
-        await newItem.save();
-        return newItem;
+            let nights = (new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24);
+            if (nights <= 0) {
+                return { error: 'Ngày trả phòng phải sau ngày nhận phòng' };
+            }
+
+            let totalPrice = room.roomType.pricePerNight * nights;
+            if (discountAmount) {
+                totalPrice = totalPrice - discountAmount;
+            }
+            let bookingCode = 'BK' + Date.now().toString(36).toUpperCase();
+
+            let newItem = new bookingModel({
+                user: userId,
+                hotel: hotelId,
+                room: roomId,
+                checkInDate: checkInDate,
+                checkOutDate: checkOutDate,
+                numberOfGuests: numberOfGuests,
+                totalPrice: totalPrice,
+                specialRequests: specialRequests || "",
+                promotion: promotionId || null,
+                discountAmount: discountAmount || 0,
+                bookingCode: bookingCode
+            });
+            await newItem.save();
+            return newItem;
+        } catch (error) {
+            console.error("Lỗi khi tạo booking:", error);
+            return { error: 'Lỗi hệ thống khi tạo booking' };
+        }
     },
     GetAllBooking: async function () {
         return await bookingModel.find({ isDeleted: false })
