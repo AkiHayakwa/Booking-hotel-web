@@ -27,12 +27,12 @@ function App() {
         <Routes>
           {/* ── Admin routes (own layout — no Header/Footer) ── */}
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-          <Route path="/admin/bookings"  element={<AdminBookingsPage />} />
-          <Route path="/admin/hotels"    element={<AdminHotelsPage />} />
-          <Route path="/admin/users"     element={<AdminUsersPage />} />
-          <Route path="/admin/reports"   element={<AdminReportsPage />} />
-          <Route path="/admin/rooms"     element={<AdminRoomsPage />} />
-          <Route path="/admin/settings"  element={<AdminSettingsPage />} />
+          <Route path="/admin/bookings" element={<AdminBookingsPage />} />
+          <Route path="/admin/hotels" element={<AdminHotelsPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/reports" element={<AdminReportsPage />} />
+          <Route path="/admin/rooms" element={<AdminRoomsPage />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
 
           {/* ── Public routes (with Header / Footer) ── */}
           <Route

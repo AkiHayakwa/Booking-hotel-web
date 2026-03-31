@@ -90,7 +90,8 @@ async function seedAdmin() {
 mongoose.connect('mongodb://localhost:27017/hotel_booking');
 mongoose.connection.on('connected', async () => {
   console.log("connected");
-  // Đã xóa dữ liệu tạo mẫu (seedRoles, seedAdmin) theo yêu cầu
+  await seedRoles();
+  await seedAdmin();
 })
 mongoose.connection.on('disconnected', () => {
   console.log("disconnected");
