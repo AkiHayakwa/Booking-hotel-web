@@ -149,6 +149,8 @@ const ownerApi = {
   /** Lấy danh sách tất cả tiện nghi hệ thống để owner chọn cho KS */
   getAmenities: () =>
     axiosClient.get('/amenities'),
+
+
 };
 
 export default ownerApi;

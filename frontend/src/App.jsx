@@ -24,11 +24,12 @@ import AdminPromotionsPage from './pages/AdminPromotionsPage';
 import AdminBlogsPage from './pages/AdminBlogsPage';
 import './index.css';
 
-import OwnerDashboardPage   from './pages/OwnerDashboardPage';
-import OwnerHotelPage      from './pages/OwnerHotelPage';
-import OwnerRoomTypesPage  from './pages/OwnerRoomTypesPage';
-import OwnerRoomsPage      from './pages/OwnerRoomsPage';
-import OwnerBookingsPage   from './pages/OwnerBookingsPage';
+import OwnerDashboardPage from './pages/OwnerDashboardPage';
+import OwnerHotelPage from './pages/OwnerHotelPage';
+import OwnerRoomTypesPage from './pages/OwnerRoomTypesPage';
+import OwnerRoomsPage from './pages/OwnerRoomsPage';
+import OwnerBookingsPage from './pages/OwnerBookingsPage';
+import OwnerSettingsPage from './pages/OwnerSettingsPage';
 
 function OwnerWrapper({ children }) {
   return (
@@ -61,13 +62,13 @@ function App() {
           {/* Uncomment từng dòng khi tạo xong page tương ứng                  */}
           <Route path="/owner" element={<Navigate to="/owner/dashboard" replace />} />
           <Route path="/owner/dashboard" element={<OwnerWrapper><OwnerDashboardPage /></OwnerWrapper>} />
-          <Route path="/owner/hotel"     element={<OwnerWrapper><OwnerHotelPage /></OwnerWrapper>} />
+          <Route path="/owner/hotel" element={<OwnerWrapper><OwnerHotelPage /></OwnerWrapper>} />
           <Route path="/owner/room-types" element={<OwnerWrapper><OwnerRoomTypesPage /></OwnerWrapper>} />
-          <Route path="/owner/rooms"      element={<OwnerWrapper><OwnerRoomsPage /></OwnerWrapper>} />
-          <Route path="/owner/bookings"   element={<OwnerWrapper><OwnerBookingsPage /></OwnerWrapper>} />
+          <Route path="/owner/rooms" element={<OwnerWrapper><OwnerRoomsPage /></OwnerWrapper>} />
+          <Route path="/owner/bookings" element={<OwnerWrapper><OwnerBookingsPage /></OwnerWrapper>} />
           {/* <Route path="/owner/promotions" element={<OwnerWrapper><OwnerPromotionsPage /></OwnerWrapper>} /> */}
           {/* <Route path="/owner/reviews"    element={<OwnerWrapper><OwnerReviewsPage /></OwnerWrapper>} /> */}
-          {/* <Route path="/owner/settings"   element={<OwnerWrapper><OwnerSettingsPage /></OwnerWrapper>} /> */}
+          <Route path="/owner/settings" element={<OwnerWrapper><OwnerSettingsPage /></OwnerWrapper>} />
 
           {/* ── Public routes (with Header / Footer) ── */}
           <Route
