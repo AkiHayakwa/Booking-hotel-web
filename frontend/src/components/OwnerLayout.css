@@ -133,6 +133,27 @@
   border: none; border-top: 1px solid rgba(255,255,255,0.07);
 }
 
+/* Hotel selector dropdown (khi có nhiều KS) */
+.owner-sidebar__hotel-select {
+  width: 100%;
+  background: rgba(8,145,178,0.15);
+  border: 1px solid rgba(8,145,178,0.35);
+  border-radius: 7px;
+  color: #fff;
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer; outline: none;
+  font-family: inherit;
+}
+.owner-sidebar__hotel-select:focus {
+  border-color: var(--owner-accent);
+  box-shadow: 0 0 0 2px rgba(8,145,178,0.25);
+}
+.owner-sidebar__hotel-select option {
+  background: #0c1a2e; color: #fff; font-weight: 600;
+}
+
+
 /* Profile */
 .owner-sidebar__profile {
   padding: 0.875rem;

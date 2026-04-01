@@ -1,50 +1,51 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axiosClient from '../api/axiosClient';
 
 const OwnerContext = createContext(null);
 
 export function OwnerProvider({ children }) {
-  const [hotel, setHotel] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [hotels, setHotels]               = useState([]);       // Tất cả KS của owner
+  const [selectedHotelId, setSelectedHotelId] = useState(null); // KS đang được chọn để quản lý
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState(null);
 
-  useEffect(() => {
-    axiosClient.get('/hotels/my-hotels')
-      .then(res => {
-        // Lấy khách sạn đầu tiên của owner (thường chỉ có 1)
-        const hotels = res.data;
-        if (hotels && hotels.length > 0) {
-          setHotel(hotels[0]);
-        } else {
-          setHotel(null); // Chưa có khách sạn
-        }
-      })
-      .catch(err => {
-        console.error('Không thể tải thông tin khách sạn:', err);
-        setError('Không thể tải thông tin khách sạn.');
-      })
-      .finally(() => setLoading(false));
+  const fetchHotels = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await axiosClient.get('/hotels/my-hotels');
+      const list = Array.isArray(res.data) ? res.data : [];
+      setHotels(list);
+
+      // Giữ nguyên selection nếu KS đã chọn vẫn tồn tại, không thì chọn cái đầu
+      setSelectedHotelId(prev => {
+        if (prev && list.find(h => h._id === prev)) return prev;
+        return list.length > 0 ? list[0]._id : null;
+      });
+    } catch (err) {
+      console.error('Không thể tải danh sách khách sạn:', err);
+      setError('Không thể tải danh sách khách sạn.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // Cho phép update hotel từ bên ngoài (sau khi chỉnh sửa thông tin KS)
-  const refreshHotel = () => {
-    setLoading(true);
-    axiosClient.get('/hotels/my-hotels')
-      .then(res => {
-        const hotels = res.data;
-        setHotel(hotels && hotels.length > 0 ? hotels[0] : null);
-      })
-      .catch(() => setError('Không thể tải thông tin khách sạn.'))
-      .finally(() => setLoading(false));
-  };
+  useEffect(() => { fetchHotels(); }, [fetchHotels]);
+
+  // hotel = KS đang được chọn để quản lý (dùng bởi tất cả trang con)
+  const hotel   = hotels.find(h => h._id === selectedHotelId) || null;
+  const hotelId = hotel?._id || null;
 
   return (
     <OwnerContext.Provider value={{
-      hotel,
-      hotelId: hotel?._id || null,
+      hotels,             // Toàn bộ danh sách KS của owner
+      hotel,              // KS đang chọn (backward compatible)
+      hotelId,            // _id của KS đang chọn (backward compatible)
+      selectedHotelId,
+      setSelectedHotelId, // Cho phép switch sang KS khác
       loading,
       error,
-      refreshHotel
+      refreshHotel: fetchHotels,  // backward compatible alias
+      refreshHotels: fetchHotels,
     }}>
       {children}
     </OwnerContext.Provider>

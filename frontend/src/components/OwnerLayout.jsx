@@ -69,7 +69,7 @@ function OwnerHeader({ searchPlaceholder, onSearch }) {
 function SidebarContent() {
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { hotel } = useOwner();
+  const { hotel, hotels, selectedHotelId, setSelectedHotelId } = useOwner();
 
   const displayName = user?.fullName || user?.username || 'Owner';
   const avatarUrl = user?.avatar ||
@@ -93,13 +93,32 @@ function SidebarContent() {
         </div>
       </div>
 
-      {/* Tên KS đang quản lý */}
-      {hotel && (
+      {/* Tên KS đang quản lý — dropdown khi có nhiều KS */}
+      {hotels.length > 0 && (
         <div className="owner-sidebar__hotel-info">
           <span className="material-symbols-outlined owner-sidebar__hotel-icon">apartment</span>
-          <div>
-            <p className="owner-sidebar__hotel-name">{hotel.name}</p>
-            <p className="owner-sidebar__hotel-city">{hotel.city}</p>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {hotels.length === 1 ? (
+              /* Chỉ 1 KS → hiển thị tĩnh */
+              <>
+                <p className="owner-sidebar__hotel-name">{hotel?.name}</p>
+                <p className="owner-sidebar__hotel-city">{hotel?.city}</p>
+              </>
+            ) : (
+              /* Nhiều KS → dropdown chọn */
+              <select
+                className="owner-sidebar__hotel-select"
+                value={selectedHotelId || ''}
+                onChange={e => setSelectedHotelId(e.target.value)}
+                title="Chọn khách sạn đang quản lý"
+              >
+                {hotels.map(h => (
+                  <option key={h._id} value={h._id}>
+                    {h.name}{!h.isApproved ? ' ⏳' : ''}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
       )}

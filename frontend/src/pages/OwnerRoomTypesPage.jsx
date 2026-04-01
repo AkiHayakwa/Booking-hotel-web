@@ -231,7 +231,19 @@ function RoomTypeModal({ editTarget, onClose, onSaved, hotelId }) {
 
 /* ══ MAIN PAGE ════════════════════════════════ */
 export default function OwnerRoomTypesPage() {
-  const { hotel, hotelId } = useOwner();
+  const { hotels, selectedHotelId } = useOwner();
+
+  // Hotel đang xem loại phòng — mặc định là KS đang được chọn trong sidebar
+  const [activeHotelId, setActiveHotelId] = useState(selectedHotelId || '');
+
+  // Sync khi context thay đổi (lần đầu load)
+  useEffect(() => {
+    if (selectedHotelId && !activeHotelId) {
+      setActiveHotelId(selectedHotelId);
+    }
+  }, [selectedHotelId]);
+
+  const activeHotel = hotels.find(h => h._id === activeHotelId) || null;
 
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading]     = useState(true);
@@ -239,25 +251,25 @@ export default function OwnerRoomTypesPage() {
 
   // Modal state
   const [showModal, setShowModal]   = useState(false);
-  const [editTarget, setEditTarget] = useState(null); // null = tạo mới, object = sửa
+  const [editTarget, setEditTarget] = useState(null);
 
   // Confirm delete
-  const [confirmTarget, setConfirmTarget] = useState(null); // roomType object
+  const [confirmTarget, setConfirmTarget] = useState(null);
   const [deleting, setDeleting]           = useState(false);
 
-  /* ── Fetch danh sách ── */
+  /* ── Fetch danh sách theo activeHotelId ── */
   const fetchRoomTypes = useCallback(async () => {
-    if (!hotelId) return;
+    if (!activeHotelId) { setRoomTypes([]); setLoading(false); return; }
     setLoading(true);
     try {
-      const res = await ownerApi.getRoomTypes(hotelId);
+      const res = await ownerApi.getRoomTypes(activeHotelId);
       setRoomTypes(Array.isArray(res.data) ? res.data.filter(rt => !rt.isDeleted) : []);
     } catch {
       flash('Không thể tải danh sách loại phòng.', 'error');
     } finally {
       setLoading(false);
     }
-  }, [hotelId]);
+  }, [activeHotelId]);
 
   useEffect(() => { fetchRoomTypes(); }, [fetchRoomTypes]);
 
@@ -308,13 +320,49 @@ export default function OwnerRoomTypesPage() {
         <div>
           <h2 className="admin-page-header__title">Loại phòng</h2>
           <p className="admin-page-header__sub">
-            Quản lý các hạng phòng của <b>{hotel?.name}</b>
+            Quản lý hạng phòng theo từng khách sạn
           </p>
         </div>
-        <button className="ort-add-btn" id="btn-add-room-type" onClick={openCreate}>
+        <button className="ort-add-btn" id="btn-add-room-type"
+          onClick={openCreate} disabled={!activeHotelId}
+          title={!activeHotelId ? 'Chọn khách sạn trước' : ''}
+        >
           <span className="material-symbols-outlined">add</span>
           Thêm loại phòng
         </button>
+      </div>
+
+      {/* ── Hotel Selector ── */}
+      <div className="ort-hotel-selector">
+        <span className="material-symbols-outlined ort-hotel-selector__icon">domain</span>
+        <div className="ort-hotel-selector__inner">
+          <label className="ort-hotel-selector__label">Khách sạn</label>
+          <select
+            id="select-hotel-for-room-types"
+            className="ort-hotel-selector__select"
+            value={activeHotelId}
+            onChange={e => setActiveHotelId(e.target.value)}
+          >
+            {hotels.length === 0 && (
+              <option value="">Chưa có khách sạn</option>
+            )}
+            {hotels.map(h => (
+              <option key={h._id} value={h._id}>
+                {h.name} — {h.city}{!h.isApproved ? ' ⏳' : ' ✅'}
+              </option>
+            ))}
+          </select>
+        </div>
+        {activeHotel && (
+          <span className={`ort-hotel-selector__badge ${
+            activeHotel.isApproved ? 'ort-hotel-selector__badge--ok' : 'ort-hotel-selector__badge--pending'
+          }`}>
+            <span className="material-symbols-outlined">
+              {activeHotel.isApproved ? 'verified' : 'schedule'}
+            </span>
+            {activeHotel.isApproved ? 'Đã duyệt' : 'Chờ duyệt'}
+          </span>
+        )}
       </div>
 
       {/* ── Stats Strip ── */}
@@ -388,7 +436,7 @@ export default function OwnerRoomTypesPage() {
       {showModal && (
         <RoomTypeModal
           editTarget={editTarget}
-          hotelId={hotelId}
+          hotelId={activeHotelId}
           onClose={closeModal}
           onSaved={handleSaved}
         />
