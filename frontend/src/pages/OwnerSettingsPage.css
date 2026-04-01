@@ -1,0 +1,193 @@
+/* OwnerSettingsPage.css */
+
+.osg-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ── Grid Layout cho nội dung ── */
+.osg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .osg-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Card Style ── */
+.osg-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  overflow: hidden;
+}
+.osg-card__header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.osg-card__title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #0c1a2e;
+}
+.osg-card__icon {
+  color: #0891b2;
+  font-size: 1.35rem;
+}
+.osg-card__body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Profile Header (ảnh đại diện) ── */
+.osg-profile-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.osg-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(8,145,178,0.3);
+}
+.osg-profile-info h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0c1a2e;
+  margin-bottom: 0.2rem;
+}
+.osg-profile-info p {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+.osg-role-badge {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ── Form Groups ── */
+.osg-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.osg-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.osg-value-box {
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #475569;
+  font-weight: 500;
+  user-select: all;
+}
+
+.osg-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #0c1a2e;
+  font-family: inherit;
+  transition: 0.2s;
+  box-sizing: border-box;
+}
+.osg-input:focus {
+  outline: none;
+  border-color: #0891b2;
+  box-shadow: 0 0 0 3px rgba(8,145,178,0.1);
+}
+
+.osg-form-footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Button ── */
+.osg-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 12px rgba(8,145,178,0.25);
+}
+.osg-btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(8,145,178,0.4);
+}
+.osg-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Status Message ── */
+.osg-msg {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.osg-msg--error {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+}
+.osg-msg--success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
