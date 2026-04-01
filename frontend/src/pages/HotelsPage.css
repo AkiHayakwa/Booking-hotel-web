@@ -2,15 +2,22 @@
    LuxStay Booking — Hotels Page Styles
    ============================================ */
 
-/* 
-  Hiện tại trang HotelsPage sử dụng hoàn toàn các Utility Classes của Tailwind theo như 
-  bản HTML gốc bạn cung cấp (ví dụ: bg-white, flex, rounded-2xl, grid, v.v.).
-
-  Tuy nhiên, tôi đã tạo file CSS này và import sẵn vào component HotelsPage.jsx. 
-  Nếu sau này bạn cần tuỳ chỉnh các hiệu ứng phức tạp (như animation, grid chuyên dụng, hay ghi đè style), 
-  bạn có thể viết trực tiếp vào file này!
-*/
-
 .hotels-page-container {
   display: block;
 }
+
+/* Loading spinner */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Line clamp cho description */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+}
+

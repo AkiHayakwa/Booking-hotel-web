@@ -17,9 +17,22 @@ module.exports = {
         return newItem;
     },
     GetAllHotel: async function () {
-        return await hotelModel.find({ isDeleted: false, isApproved: true })
+        let roomTypeModel = require('../schemas/RoomType');
+        let hotels = await hotelModel.find({ isDeleted: false, isApproved: true })
             .populate('owner', 'username fullName email')
-            .populate('amenities')
+            .populate('amenities', 'name icon')
+            .lean();
+        // Tính minPrice từ roomTypes
+        const roomTypesAll = await roomTypeModel.find({ isDeleted: false })
+            .select('hotel pricePerNight').lean();
+        const rtMap = {};
+        roomTypesAll.forEach(rt => {
+            const hid = rt.hotel.toString();
+            if (!rtMap[hid] || rt.pricePerNight < rtMap[hid]) {
+                rtMap[hid] = rt.pricePerNight;
+            }
+        });
+        return hotels.map(h => ({ ...h, minPrice: rtMap[h._id.toString()] || null }));
     },
     GetAllHotelAdmin: async function () {
         return await hotelModel.find({ isDeleted: false })
@@ -40,11 +53,24 @@ module.exports = {
             .populate('amenities')
     },
     GetHotelsByCity: async function (city) {
-        return await hotelModel.find({
+        let roomTypeModel = require('../schemas/RoomType');
+        let hotels = await hotelModel.find({
             city: { $regex: city, $options: 'i' },
             isDeleted: false,
             isApproved: true
-        }).populate('amenities')
+        }).populate('amenities', 'name icon').lean();
+        if (!hotels.length) return hotels;
+        const hotelIds = hotels.map(h => h._id);
+        const roomTypes = await roomTypeModel.find({ hotel: { $in: hotelIds }, isDeleted: false })
+            .select('hotel pricePerNight').lean();
+        const rtMap = {};
+        roomTypes.forEach(rt => {
+            const hid = rt.hotel.toString();
+            if (!rtMap[hid] || rt.pricePerNight < rtMap[hid]) {
+                rtMap[hid] = rt.pricePerNight;
+            }
+        });
+        return hotels.map(h => ({ ...h, minPrice: rtMap[h._id.toString()] || null }));
     },
     UpdateHotel: async function (id, body) {
         try {
