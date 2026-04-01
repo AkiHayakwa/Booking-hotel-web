@@ -46,9 +46,12 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const user = await login(username, password);
-      // Kiểm tra nếu là admin thì chuyển hướng vào dashboard admin
-      if (user && user.role && user.role.name === 'admin') {
+      const roleName = typeof user?.role === 'object' ? user?.role?.name : user?.role;
+
+      if (roleName === 'admin') {
         navigate('/admin/dashboard');
+      } else if (roleName === 'hotel_owner') {
+        navigate('/owner/dashboard');
       } else {
         navigate('/');
       }
