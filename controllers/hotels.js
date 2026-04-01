@@ -20,11 +20,13 @@ module.exports = {
         return await hotelModel.find({ isDeleted: false, isApproved: true })
             .populate('owner', 'username fullName email')
             .populate('amenities')
+            .sort({ createdAt: -1 })
     },
     GetAllHotelAdmin: async function () {
         return await hotelModel.find({ isDeleted: false })
             .populate('owner', 'username fullName email')
             .populate('amenities')
+            .sort({ createdAt: -1 })
     },
     GetHotelById: async function (id) {
         try {

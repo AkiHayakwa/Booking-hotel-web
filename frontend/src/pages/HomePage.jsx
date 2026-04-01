@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import hotelApi from '../api/hotelApi';
 import './HomePage.css';
 
 const PROVINCES_VN = [
@@ -29,6 +30,25 @@ export default function HomePage() {
   const [guests, setGuests] = useState(2);
   const [rooms, setRooms] = useState(1);
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
+  const [featuredHotels, setFeaturedHotels] = useState([]);
+  const [loadingHotels, setLoadingHotels] = useState(true);
+
+  const fetchFeaturedHotels = async () => {
+    try {
+      const res = await hotelApi.getAll();
+      if (res.data) {
+        setFeaturedHotels(res.data.slice(0, 4)); // Lấy 4 khách sạn mới nhất
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải khách sạn:", error);
+    } finally {
+      setLoadingHotels(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeaturedHotels();
+  }, []);
 
   const destRef = useRef(null);
   const guestRef = useRef(null);
@@ -335,117 +355,49 @@ export default function HomePage() {
         </div>
         
         <div className="hp-hotels-grid">
-          {/* Hotel 1 */}
-          <div className="hp-hotel-card">
-            <div className="hp-hotel-img-wrapper">
-              <img alt="InterContinental Danang" className="hp-hotel-img" src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80"/>
-              <span className="hp-hotel-badge">-30%</span>
-            </div>
-            <div className="hp-hotel-body">
-              <div className="hp-hotel-stars">
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
+          {loadingHotels ? (
+            <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '2rem'}}>Đang tải dữ liệu...</div>
+          ) : featuredHotels.length > 0 ? featuredHotels.map(hotel => (
+            <div key={hotel._id} className="hp-hotel-card" onClick={() => navigate(`/hotels/${hotel._id}`)}>
+              <div className="hp-hotel-img-wrapper">
+                <img 
+                  alt={hotel.name} 
+                  className="hp-hotel-img" 
+                  src={hotel.images?.[0] || 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80'}
+                />
+                {hotel.rating >= 4.5 && <span className="hp-hotel-badge">Phổ biến</span>}
               </div>
-              <h5 className="hp-hotel-title">InterContinental Danang</h5>
-              <p className="hp-hotel-location">
-                <span className="material-symbols-outlined">location_on</span> Bán đảo Sơn Trà, Đà Nẵng
-              </p>
-              <div className="hp-hotel-footer">
-                <div>
-                  <span className="hp-hotel-price-old">8.500.000đ</span>
-                  <span className="hp-hotel-price-new">5.950.000đ</span>
-                  <span className="hp-hotel-price-unit">/ đêm</span>
+              <div className="hp-hotel-body">
+                <div className="hp-hotel-stars">
+                  {[...Array(5)].map((_, i) => (
+                    <span 
+                      key={i} 
+                      className="material-symbols-outlined"
+                      style={{ color: i < Math.floor(hotel.rating || 5) ? '#d4af37' : '#e2e8f0' }}
+                    >
+                      star
+                    </span>
+                  ))}
                 </div>
-                <button className="hp-hotel-btn">Chi tiết</button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Hotel 2 */}
-          <div className="hp-hotel-card">
-            <div className="hp-hotel-img-wrapper">
-              <img alt="Six Senses Ninh Van Bay" className="hp-hotel-img" src="https://images.unsplash.com/photo-1618140052121-39fc6db33972?w=600&q=80"/>
-            </div>
-            <div className="hp-hotel-body">
-              <div className="hp-hotel-stars">
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-              </div>
-              <h5 className="hp-hotel-title">Six Senses Ninh Van Bay</h5>
-              <p className="hp-hotel-location">
-                <span className="material-symbols-outlined">location_on</span> Vịnh Ninh Vân, Nha Trang
-              </p>
-              <div className="hp-hotel-footer">
-                <div>
-                  <span className="hp-hotel-price-new">12.200.000đ</span>
-                  <span className="hp-hotel-price-unit">/ đêm</span>
+                <h5 className="hp-hotel-title">{hotel.name}</h5>
+                <p className="hp-hotel-location">
+                  <span className="material-symbols-outlined">location_on</span> {hotel.city}, {hotel.address.split(',').pop().trim()}
+                </p>
+                <div className="hp-hotel-footer">
+                  <div>
+                    {/* Giả định giá từ phòng thấp nhất nếu có, nếu không để mặc định */}
+                    <span className="hp-hotel-price-new">
+                      {(hotel.minPrice || 2500000).toLocaleString()}đ
+                    </span>
+                    <span className="hp-hotel-price-unit">/ đêm</span>
+                  </div>
+                  <button className="hp-hotel-btn">Chi tiết</button>
                 </div>
-                <button className="hp-hotel-btn">Chi tiết</button>
               </div>
             </div>
-          </div>
-          
-          {/* Hotel 3 */}
-          <div className="hp-hotel-card">
-            <div className="hp-hotel-img-wrapper">
-              <img alt="JW Marriott Phu Quoc" className="hp-hotel-img" src="https://images.unsplash.com/photo-1549294413-26f505494cb3?w=600&q=80"/>
-              <span className="hp-hotel-badge">-20%</span>
-            </div>
-            <div className="hp-hotel-body">
-              <div className="hp-hotel-stars">
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-              </div>
-              <h5 className="hp-hotel-title">JW Marriott Phu Quoc</h5>
-              <p className="hp-hotel-location">
-                <span className="material-symbols-outlined">location_on</span> Bãi Khem, Phú Quốc
-              </p>
-              <div className="hp-hotel-footer">
-                <div>
-                  <span className="hp-hotel-price-old">9.200.000đ</span>
-                  <span className="hp-hotel-price-new">7.360.000đ</span>
-                  <span className="hp-hotel-price-unit">/ đêm</span>
-                </div>
-                <button className="hp-hotel-btn">Chi tiết</button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Hotel 4 */}
-          <div className="hp-hotel-card">
-            <div className="hp-hotel-img-wrapper">
-              <img alt="Pullman Vung Tau" className="hp-hotel-img" src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80"/>
-            </div>
-            <div className="hp-hotel-body">
-              <div className="hp-hotel-stars">
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-                <span className="material-symbols-outlined">star</span>
-              </div>
-              <h5 className="hp-hotel-title">Pullman Vung Tau</h5>
-              <p className="hp-hotel-location">
-                <span className="material-symbols-outlined">location_on</span> Vũng Tàu, BR-VT
-              </p>
-              <div className="hp-hotel-footer">
-                <div>
-                  <span className="hp-hotel-price-new">3.500.000đ</span>
-                  <span className="hp-hotel-price-unit">/ đêm</span>
-                </div>
-                <button className="hp-hotel-btn">Chi tiết</button>
-              </div>
-            </div>
-          </div>
+          )) : (
+            <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '2rem'}}>Chưa có khách sạn nào được cập nhật.</div>
+          )}
         </div>
       </section>
 

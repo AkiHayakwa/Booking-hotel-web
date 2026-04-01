@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import promotionApi from '../api/promotionApi';
 import './PromotionsPage.css';
 
 const PROVINCES_VN = [
@@ -27,6 +28,25 @@ export default function PromotionsPage() {
   const [guests, setGuests] = useState(2);
   const [rooms, setRooms] = useState(1);
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
+  const [promotions, setPromotions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPromotions = async () => {
+    try {
+      const res = await promotionApi.getAll();
+      if (res.data) {
+        setPromotions(res.data.filter(p => p.isActive)); // Chỉ lấy ưu đãi đang chạy
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải ưu đãi:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPromotions();
+  }, []);
 
   const destRef = useRef(null);
   const guestRef = useRef(null);
@@ -255,53 +275,35 @@ export default function PromotionsPage() {
         </div>
         
         <div className="promo-grid">
-          {/* Promo Card 1 */}
-          <div className="promo-card">
-            <div className="promo-card__img-wrapper">
-              <div className="promo-card__badge">-30%</div>
-              <img className="promo-card__img" alt="Đà Nẵng" src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&q=80" />
-            </div>
-            <div className="promo-card__body">
-              <div className="promo-card__date">
-                <span className="material-symbols-outlined">calendar_today</span> Hạn dùng: 31/08/2026
+          {loading ? (
+            <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '3rem'}}>Đang tải ưu đãi...</div>
+          ) : promotions.length > 0 ? promotions.map(p => (
+            <div key={p._id} className="promo-card">
+              <div className="promo-card__img-wrapper">
+                <div className="promo-card__badge">
+                  {p.discountType === 'percentage' ? `-${p.discountValue}%` : `-${p.discountValue.toLocaleString()}đ`}
+                </div>
+                <img 
+                  className="promo-card__img" 
+                  alt={p.title} 
+                  src={p.thumbnail || 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&q=80'} 
+                />
               </div>
-              <h3 className="promo-card__title">Chào hè tại Đà Nẵng</h3>
-              <p className="promo-card__desc">Tận hưởng bãi biển Mỹ Khê tuyệt đẹp với dịch vụ nghỉ dưỡng 5 sao tiêu chuẩn quốc tế.</p>
-              <button className="promo-card__btn">Nhận ưu đãi</button>
-            </div>
-          </div>
-          
-          {/* Promo Card 2 */}
-          <div className="promo-card">
-            <div className="promo-card__img-wrapper">
-              <div className="promo-card__badge">-40%</div>
-              <img className="promo-card__img" alt="Phú Quốc" src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80" />
-            </div>
-            <div className="promo-card__body">
-              <div className="promo-card__date">
-                <span className="material-symbols-outlined">calendar_today</span> Hạn dùng: 15/09/2026
+              <div className="promo-card__body">
+                <div className="promo-card__date">
+                  <span className="material-symbols-outlined">calendar_today</span> Hạn dùng: {new Date(p.endDate).toLocaleDateString()}
+                </div>
+                <h3 className="promo-card__title">{p.title}</h3>
+                <p className="promo-card__desc">{p.description || "Tận hưởng những giây phút nghỉ dưỡng tuyệt vời với mức giá ưu đãi cực hấp dẫn."}</p>
+                <code className="promo-code-text" style={{display: 'block', margin: '0.5rem 0', color: '#d4af37', fontWeight: 'bold'}}>
+                  CODE: {p.promoCode || 'AUTO_APPLY'}
+                </code>
+                <button className="promo-card__btn" onClick={() => navigate('/hotels')}>Nhận ưu đãi</button>
               </div>
-              <h3 className="promo-card__title">Phú Quốc mộng mơ</h3>
-              <p className="promo-card__desc">Khám phá đảo ngọc với gói combo nghỉ dưỡng và lặn ngắm san hô độc quyền.</p>
-              <button className="promo-card__btn">Nhận ưu đãi</button>
             </div>
-          </div>
-          
-          {/* Promo Card 3 */}
-          <div className="promo-card">
-            <div className="promo-card__img-wrapper">
-              <div className="promo-card__badge">-25%</div>
-              <img className="promo-card__img" alt="Sapa" src="https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80" />
-            </div>
-            <div className="promo-card__body">
-              <div className="promo-card__date">
-                <span className="material-symbols-outlined">calendar_today</span> Hạn dùng: 10/10/2026
-              </div>
-              <h3 className="promo-card__title">Sapa mờ sương</h3>
-              <p className="promo-card__desc">Săn mây tại đỉnh Fansipan và trải nghiệm văn hóa bản địa đặc sắc miền núi phía Bắc.</p>
-              <button className="promo-card__btn">Nhận ưu đãi</button>
-            </div>
-          </div>
+          )) : (
+            <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '3rem'}}>Hiện tại chưa có chương trình ưu đãi nào.</div>
+          )}
         </div>
       </section>
 

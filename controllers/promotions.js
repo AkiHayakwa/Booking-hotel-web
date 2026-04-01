@@ -8,6 +8,10 @@ module.exports = {
             endDate: { $gte: new Date() }
         }).populate('hotel', 'name city').populate('applicableRoomTypes')
     },
+    GetAllPromotionAdmin: async function () {
+        return await promotionModel.find({ isDeleted: false })
+            .populate('hotel', 'name city').populate('applicableRoomTypes')
+    },
     GetPromotionsByHotel: async function (hotelId) {
         return await promotionModel.find({ hotel: hotelId, isDeleted: false })
             .populate('applicableRoomTypes')
