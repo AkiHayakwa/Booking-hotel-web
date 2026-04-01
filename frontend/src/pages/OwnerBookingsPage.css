@@ -1,0 +1,249 @@
+/* OwnerBookingsPage.css */
+
+/* ── Hotel Selector (reuse pattern) ─────── */
+.obk-hotel-selector {
+  display: flex; align-items: center; gap: 0.875rem;
+  background: #fff; border: 1.5px solid #e0f2fe;
+  border-radius: 12px; padding: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 4px rgba(8,145,178,0.06);
+}
+.obk-hotel-selector__icon { font-size: 1.25rem; color: #0891b2; flex-shrink: 0; }
+.obk-hotel-selector__inner { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; }
+.obk-hotel-selector__label {
+  font-size: 0.7rem; font-weight: 700; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.obk-hotel-selector__select {
+  border: none; outline: none; background: transparent;
+  font-size: 0.9375rem; font-weight: 700; color: #0c1a2e;
+  font-family: inherit; cursor: pointer; padding: 0; width: 100%;
+}
+.obk-hotel-selector__badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.25rem 0.7rem; border-radius: 9999px;
+  font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+}
+.obk-hotel-selector__badge .material-symbols-outlined { font-size: 0.85rem; }
+.obk-hotel-selector__badge--ok      { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.obk-hotel-selector__badge--pending { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
+
+/* ── Status Tabs ──────────────────────────── */
+.obk-tabs {
+  display: flex; gap: 0.25rem; flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+  background: #f8fafc; padding: 0.35rem;
+  border-radius: 12px; border: 1px solid #e2e8f0;
+}
+.obk-tab {
+  display: flex; align-items: center; gap: 0.35rem;
+  padding: 0.45rem 0.875rem; border-radius: 8px;
+  border: none; background: transparent;
+  font-size: 0.8rem; font-weight: 600; color: #64748b;
+  font-family: inherit; cursor: pointer; transition: 0.15s;
+  white-space: nowrap;
+}
+.obk-tab:hover { background: #fff; color: #0c1a2e; }
+.obk-tab.active {
+  background: #fff; color: #0891b2; font-weight: 800;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.obk-tab__count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  border-radius: 9999px; font-size: 0.65rem; font-weight: 900;
+  background: #e2e8f0; color: #475569;
+}
+.obk-tab.active .obk-tab__count { background: #e0f2fe; color: #0891b2; }
+.obk-tab__count--alert { background: #fef2f2 !important; color: #e11d48 !important; }
+
+/* ── Search Bar ──────────────────────────── */
+.obk-search-wrap {
+  position: relative; margin-bottom: 1.25rem;
+}
+.obk-search-icon {
+  position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
+  color: #94a3b8; font-size: 1.1rem; pointer-events: none;
+}
+.obk-search-input {
+  width: 100%; padding: 0.65rem 1rem 0.65rem 2.6rem;
+  border: 1.5px solid #e2e8f0; border-radius: 10px;
+  font-size: 0.875rem; color: #0c1a2e; font-family: inherit;
+  background: #fff; outline: none; transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.obk-search-input:focus { border-color: #0891b2; }
+.obk-search-input::placeholder { color: #94a3b8; }
+
+/* ── Status Badges ───────────────────────── */
+.obk-badge {
+  display: inline-flex; align-items: center; gap: 0.28rem;
+  padding: 0.22rem 0.65rem; border-radius: 9999px;
+  font-size: 0.7rem; font-weight: 800;
+  white-space: nowrap; letter-spacing: 0.03em;
+}
+.obk-badge .material-symbols-outlined { font-size: 0.75rem; }
+.obk-badge--pending    { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
+.obk-badge--confirmed  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.obk-badge--checked_in { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.obk-badge--checked_out{ background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+.obk-badge--cancelled  { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
+
+/* ── Action Buttons ──────────────────────── */
+.obk-action-group { display: flex; gap: 0.25rem; align-items: center; }
+.obk-action-btn {
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  padding: 0.28rem 0.6rem; border-radius: 7px;
+  font-size: 0.7rem; font-weight: 700; font-family: inherit;
+  cursor: pointer; border: 1.5px solid transparent; transition: 0.15s;
+  white-space: nowrap;
+}
+.obk-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.obk-action-btn .material-symbols-outlined { font-size: 0.8rem; }
+
+.obk-action-btn--confirm  { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.obk-action-btn--confirm:hover:not(:disabled)  { background: #dcfce7; }
+.obk-action-btn--checkin  { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.obk-action-btn--checkin:hover:not(:disabled)  { background: #dbeafe; }
+.obk-action-btn--checkout { background: #f0f9ff; color: #0891b2; border-color: #bae6fd; }
+.obk-action-btn--checkout:hover:not(:disabled) { background: #e0f2fe; }
+.obk-action-btn--cancel   { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+.obk-action-btn--cancel:hover:not(:disabled)   { background: #ffe4e6; }
+.obk-action-btn--view     { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+.obk-action-btn--view:hover:not(:disabled)     { background: #f1f5f9; }
+
+/* ── Table specific ──────────────────────── */
+.obk-code { font-family: 'Courier New', monospace; font-weight: 800; color: #0891b2; font-size: 0.8rem; }
+.obk-customer { display: flex; align-items: center; gap: 0.6rem; }
+.obk-customer__avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 800; flex-shrink: 0;
+}
+.obk-customer__name  { font-size: 0.85rem; font-weight: 700; color: #0c1a2e; }
+.obk-customer__email { font-size: 0.73rem; color: #94a3b8; }
+.obk-dates-main { font-size: 0.82rem; font-weight: 600; color: #1e293b; }
+.obk-dates-nights{ font-size: 0.72rem; color: #94a3b8; }
+.obk-price { font-weight: 800; color: #0891b2; font-size: 0.9rem; }
+.obk-price--discount{ text-decoration: line-through; font-weight: 400; color: #94a3b8; font-size: 0.75rem; }
+
+.obk-table-wrap { overflow-x: auto; }
+
+/* ── Empty State ─────────────────────────── */
+.obk-empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.75rem; padding: 4rem 2rem; text-align: center;
+  background: #fff; border-radius: 16px; border: 2px dashed #e2e8f0;
+}
+.obk-empty .material-symbols-outlined { font-size: 3rem; color: #bae6fd; }
+.obk-empty h3 { font-size: 1.1rem; font-weight: 800; color: #1e293b; }
+.obk-empty p  { font-size: 0.875rem; color: #94a3b8; }
+
+/* ── Detail Drawer ───────────────────────── */
+.obk-drawer-overlay {
+  position: fixed; inset: 0; background: rgba(12,26,46,0.45);
+  backdrop-filter: blur(3px); z-index: 9000;
+}
+.obk-drawer {
+  position: fixed; right: 0; top: 0; bottom: 0;
+  width: 420px; max-width: 100vw;
+  background: #fff; z-index: 9001;
+  display: flex; flex-direction: column;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+  animation: obk-slide-in 0.25s cubic-bezier(0.2,0,0,1);
+}
+@keyframes obk-slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.obk-drawer__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+.obk-drawer__title { font-size: 1rem; font-weight: 800; color: #0c1a2e; }
+.obk-drawer__close {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: #f1f5f9; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: #475569;
+  transition: 0.15s;
+}
+.obk-drawer__close:hover { background: #e2e8f0; color: #0c1a2e; }
+
+.obk-drawer__body {
+  flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem;
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+
+.obk-drawer__section {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9;
+}
+.obk-drawer__section:last-of-type { border-bottom: none; }
+
+.obk-drawer__section-title {
+  font-size: 0.7rem; font-weight: 800; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+}
+.obk-drawer__row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 0.5rem;
+}
+.obk-drawer__row-label { font-size: 0.8rem; color: #64748b; }
+.obk-drawer__row-value { font-size: 0.8rem; font-weight: 700; color: #0c1a2e; text-align: right; }
+
+.obk-drawer__specials {
+  background: #f8fafc; border-radius: 8px; padding: 0.625rem 0.875rem;
+  font-size: 0.8rem; color: #475569; line-height: 1.5;
+  border: 1px solid #e2e8f0;
+}
+
+.obk-drawer__actions {
+  flex-shrink: 0; padding: 1rem 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex; gap: 0.625rem; flex-wrap: wrap;
+}
+.obk-drawer__action-btn {
+  flex: 1; min-width: 120px; padding: 0.65rem 1rem;
+  border-radius: 10px; font-size: 0.85rem; font-weight: 700;
+  border: none; cursor: pointer; font-family: inherit; transition: 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 0.35rem;
+}
+.obk-drawer__action-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.obk-drawer__action-btn .material-symbols-outlined { font-size: 1rem; }
+.obk-drawer__action-btn--confirm  { background: #15803d; color: #fff; }
+.obk-drawer__action-btn--confirm:hover:not(:disabled)  { background: #166534; }
+.obk-drawer__action-btn--checkin  { background: #1d4ed8; color: #fff; }
+.obk-drawer__action-btn--checkin:hover:not(:disabled)  { background: #1e40af; }
+.obk-drawer__action-btn--checkout { background: #0891b2; color: #fff; }
+.obk-drawer__action-btn--checkout:hover:not(:disabled) { background: #0e7490; }
+.obk-drawer__action-btn--cancel   { background: #fff1f2; color: #be123c; border: 1.5px solid #fecdd3; }
+.obk-drawer__action-btn--cancel:hover:not(:disabled)   { background: #ffe4e6; }
+
+/* ── No hotel state ──────────────────────── */
+.obk-no-hotel {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.75rem; padding: 4rem 2rem; text-align: center; color: #94a3b8;
+}
+.obk-no-hotel .material-symbols-outlined { font-size: 3rem; color: #bae6fd; }
+
+/* ── Spinner ─────────────────────────────── */
+.obk-btn-spin {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff; border-radius: 50%;
+  animation: obk-spin 0.65s linear infinite;
+  vertical-align: middle; margin-right: 0.25rem;
+}
+@keyframes obk-spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .obk-drawer { width: 100vw; }
+  .obk-tabs { gap: 0.2rem; }
+  .obk-tab  { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
+}

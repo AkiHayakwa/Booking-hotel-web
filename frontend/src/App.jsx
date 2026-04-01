@@ -26,6 +26,7 @@ import OwnerDashboardPage   from './pages/OwnerDashboardPage';
 import OwnerHotelPage      from './pages/OwnerHotelPage';
 import OwnerRoomTypesPage  from './pages/OwnerRoomTypesPage';
 import OwnerRoomsPage      from './pages/OwnerRoomsPage';
+import OwnerBookingsPage   from './pages/OwnerBookingsPage';
 
 function OwnerWrapper({ children }) {
   return (
@@ -59,7 +60,7 @@ function App() {
           <Route path="/owner/hotel"     element={<OwnerWrapper><OwnerHotelPage /></OwnerWrapper>} />
           <Route path="/owner/room-types" element={<OwnerWrapper><OwnerRoomTypesPage /></OwnerWrapper>} />
           <Route path="/owner/rooms"      element={<OwnerWrapper><OwnerRoomsPage /></OwnerWrapper>} />
-          {/* <Route path="/owner/bookings"   element={<OwnerWrapper><OwnerBookingsPage /></OwnerWrapper>} /> */}
+          <Route path="/owner/bookings"   element={<OwnerWrapper><OwnerBookingsPage /></OwnerWrapper>} />
           {/* <Route path="/owner/promotions" element={<OwnerWrapper><OwnerPromotionsPage /></OwnerWrapper>} /> */}
           {/* <Route path="/owner/reviews"    element={<OwnerWrapper><OwnerReviewsPage /></OwnerWrapper>} /> */}
           {/* <Route path="/owner/settings"   element={<OwnerWrapper><OwnerSettingsPage /></OwnerWrapper>} /> */}
