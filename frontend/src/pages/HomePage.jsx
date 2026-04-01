@@ -254,7 +254,16 @@ export default function HomePage() {
             </div>
             
             <button 
-              onClick={() => navigate('/hotels')}
+              onClick={() => {
+                const params = new URLSearchParams({
+                  ...(destQuery.trim() && { city: destQuery.trim() }),
+                  checkIn,
+                  checkOut,
+                  guests,
+                  rooms,
+                });
+                navigate('/hotels?' + params.toString());
+              }}
               className="hp-booking-submit"
             >
               Tìm kiếm

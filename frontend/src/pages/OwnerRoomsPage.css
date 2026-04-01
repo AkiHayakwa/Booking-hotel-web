@@ -1,0 +1,195 @@
+/* OwnerRoomsPage.css */
+
+/* ── Add Button ──────────────────────────── */
+.orm-add-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.625rem 1.125rem;
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: #fff; border: none; border-radius: 10px;
+  font-size: 0.875rem; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 3px 10px rgba(8,145,178,0.3);
+}
+.orm-add-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(8,145,178,0.38);
+}
+.orm-add-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.orm-add-btn .material-symbols-outlined { font-size: 1.1rem; }
+
+/* ── Hotel Selector ──────────────────────── */
+.orm-hotel-selector {
+  display: flex; align-items: center; gap: 0.875rem;
+  background: #fff; border: 1.5px solid #e0f2fe;
+  border-radius: 12px; padding: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 4px rgba(8,145,178,0.06);
+}
+.orm-hotel-selector__icon { font-size: 1.25rem; color: #0891b2; flex-shrink: 0; }
+.orm-hotel-selector__inner { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; }
+.orm-hotel-selector__label {
+  font-size: 0.7rem; font-weight: 700; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.orm-hotel-selector__select {
+  border: none; outline: none; background: transparent;
+  font-size: 0.9375rem; font-weight: 700; color: #0c1a2e;
+  font-family: inherit; cursor: pointer; padding: 0; width: 100%;
+}
+.orm-hotel-selector__badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.25rem 0.7rem; border-radius: 9999px;
+  font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+}
+.orm-hotel-selector__badge .material-symbols-outlined { font-size: 0.85rem; }
+.orm-hotel-selector__badge--ok      { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.orm-hotel-selector__badge--pending { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
+
+/* ── Filter Bar ──────────────────────────── */
+.orm-filter-bar {
+  display: flex; align-items: center; gap: 0.75rem;
+  flex-wrap: wrap; margin-bottom: 1.25rem;
+}
+.orm-filter-bar__label {
+  font-size: 0.78rem; font-weight: 700; color: #94a3b8;
+  white-space: nowrap;
+}
+.orm-filter-select {
+  padding: 0.45rem 0.875rem; border-radius: 9px;
+  border: 1.5px solid #e2e8f0; background: #fff;
+  font-size: 0.85rem; font-weight: 600; color: #1e293b;
+  font-family: inherit; cursor: pointer; outline: none;
+  transition: border-color 0.15s;
+}
+.orm-filter-select:focus { border-color: #0891b2; }
+
+.orm-filter-bar__sep { width: 1px; height: 1.5rem; background: #e2e8f0; }
+
+/* ── Stats Strip ─────────────────────────── */
+.orm-stats { margin-bottom: 1.25rem; }
+
+/* ── Table Card ──────────────────────────── */
+.orm-table-wrap { overflow-x: auto; }
+
+/* ── Status Badges ───────────────────────── */
+.orm-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.22rem 0.7rem; border-radius: 9999px;
+  font-size: 0.7rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.orm-badge .material-symbols-outlined { font-size: 0.75rem; }
+.orm-badge--available   { background: #f0fdf4; color: #15803d; }
+.orm-badge--occupied    { background: #eff6ff; color: #1d4ed8; }
+.orm-badge--maintenance { background: #fff7ed; color: #c2410c; }
+
+/* ── Toggle Button ───────────────────────── */
+.orm-toggle-btn {
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  padding: 0.28rem 0.6rem; border-radius: 7px;
+  font-size: 0.72rem; font-weight: 700; font-family: inherit;
+  cursor: pointer; border: 1.5px solid transparent; transition: 0.15s;
+}
+.orm-toggle-btn--to-maintenance {
+  background: #fff7ed; color: #c2410c; border-color: #fed7aa;
+}
+.orm-toggle-btn--to-maintenance:hover { background: #ffedd5; }
+.orm-toggle-btn--to-available {
+  background: #f0fdf4; color: #15803d; border-color: #bbf7d0;
+}
+.orm-toggle-btn--to-available:hover { background: #dcfce7; }
+.orm-toggle-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.orm-toggle-btn .material-symbols-outlined { font-size: 0.8rem; }
+
+/* ── Action Buttons ──────────────────────── */
+.orm-action-group { display: flex; align-items: center; gap: 0.25rem; }
+.orm-action-btn {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: none; border: none; cursor: pointer; color: #94a3b8;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.15s;
+}
+.orm-action-btn .material-symbols-outlined { font-size: 1rem; }
+.orm-action-btn:hover { background: #f1f5f9; color: #0c1a2e; }
+.orm-action-btn--edit:hover   { color: #0891b2; }
+.orm-action-btn--delete:hover { color: #e11d48; }
+.orm-action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Empty State ─────────────────────────── */
+.orm-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 0.875rem;
+  padding: 5rem 2rem; text-align: center;
+  background: #fff; border-radius: 16px;
+  border: 2px dashed #e2e8f0;
+}
+.orm-empty .material-symbols-outlined { font-size: 3rem; color: #bae6fd; }
+.orm-empty h3 { font-size: 1.15rem; font-weight: 800; color: #1e293b; }
+.orm-empty p  { font-size: 0.875rem; color: #94a3b8; max-width: 360px; line-height: 1.6; }
+
+/* ── Confirm Dialog ──────────────────────── */
+.orm-confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(12,26,46,0.55); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10000; padding: 1rem;
+}
+.orm-confirm-box {
+  background: #fff; border-radius: 16px; padding: 2rem 2.25rem;
+  max-width: 380px; width: 100%; text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  animation: orm-pop 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes orm-pop {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.orm-confirm-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #fff1f2; margin: 0 auto 1rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.orm-confirm-icon .material-symbols-outlined { font-size: 1.75rem; color: #e11d48; }
+.orm-confirm-box h4 { font-size: 1rem; font-weight: 800; color: #0c1a2e; margin-bottom: 0.4rem; }
+.orm-confirm-box p  { font-size: 0.8rem; color: #64748b; margin-bottom: 1.5rem; line-height: 1.5; }
+.orm-confirm-actions { display: flex; gap: 0.75rem; justify-content: center; }
+.orm-confirm-btn {
+  padding: 0.6rem 1.5rem; border-radius: 10px; font-weight: 700;
+  font-size: 0.875rem; font-family: inherit; cursor: pointer; border: none; transition: 0.15s;
+}
+.orm-confirm-btn--cancel { background: #f1f5f9; color: #475569; }
+.orm-confirm-btn--cancel:hover { background: #e2e8f0; }
+.orm-confirm-btn--delete { background: #e11d48; color: #fff; }
+.orm-confirm-btn--delete:hover { background: #be123c; }
+
+/* ── Spinner ─────────────────────────────── */
+.orm-btn-spin {
+  display: inline-block; width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff; border-radius: 50%;
+  animation: orm-spin 0.7s linear infinite;
+  margin-right: 0.35rem; vertical-align: middle;
+}
+@keyframes orm-spin { to { transform: rotate(360deg); } }
+
+/* ── Floor badge ─────────────────────────── */
+.orm-floor-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 7px;
+  background: #f1f5f9; color: #475569;
+  font-size: 0.78rem; font-weight: 800;
+}
+
+/* ── No hotel selected ───────────────────── */
+.orm-no-hotel {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.75rem; padding: 5rem 2rem; text-align: center; color: #94a3b8;
+}
+.orm-no-hotel .material-symbols-outlined { font-size: 3rem; color: #bae6fd; }
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .orm-filter-bar { gap: 0.5rem; }
+  .orm-filter-select { font-size: 0.8rem; }
+}
