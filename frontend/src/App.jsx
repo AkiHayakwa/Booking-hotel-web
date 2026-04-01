@@ -20,6 +20,8 @@ import AdminHotelsPage from './pages/AdminHotelsPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminReportsPage from './pages/AdminReportsPage';
 import AdminRoomsPage from './pages/AdminRoomsPage';
+import AdminPromotionsPage from './pages/AdminPromotionsPage';
+import AdminBlogsPage from './pages/AdminBlogsPage';
 import './index.css';
 
 import OwnerDashboardPage   from './pages/OwnerDashboardPage';
@@ -50,6 +52,8 @@ function App() {
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/reports" element={<AdminReportsPage />} />
           <Route path="/admin/rooms" element={<AdminRoomsPage />} />
+          <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
+          <Route path="/admin/blogs" element={<AdminBlogsPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
 
           {/* ── Owner routes — dùng OwnerWrapper thay cho PrivateOwnerRoute ── */}

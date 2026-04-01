@@ -1,0 +1,103 @@
+.admin-promos {
+  padding: 1rem;
+}
+
+.admin-promos__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-promos__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 0.25rem;
+}
+
+.admin-promos__subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.admin-promos__add-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-promos__add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 31, 61, 0.2);
+}
+
+/* Promo Thumb */
+.promo-thumb img {
+  width: 80px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.promo-info .promo-name {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.promo-info .promo-code {
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #64748b;
+}
+
+.promo-discount {
+  font-weight: 800;
+  color: #d4af37;
+}
+
+.promo-dates {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.promo-dates .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+/* Modal Enhancements */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.form-group.checkbox input {
+  width: 18px;
+  height: 18px;
+}

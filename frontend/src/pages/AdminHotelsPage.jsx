@@ -245,7 +245,7 @@ export default function AdminHotelsPage() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Hotel Name</th><th>Location</th><th>Category</th>
+                <th>Hotel Name</th><th>Location</th><th>Owner</th>
                 <th style={{textAlign:'center'}}>Rooms</th><th>Status</th>
                 <th style={{textAlign:'right'}}>Actions</th>
               </tr>
@@ -269,8 +269,8 @@ export default function AdminHotelsPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="htl-location">{h.address?.city || 'Unknown'}</td>
-                    <td><span className={`admin-badge admin-badge--hotel`}>Hotel</span></td>
+                    <td className="htl-location">{h.city || 'Unknown'}</td>
+                    <td className="htl-owner">{h.owner?.fullName || h.owner?.username || 'N/A'}</td>
                     <td style={{textAlign:'center'}} className="htl-rooms">{h.rooms?.length || 0}</td>
                     <td>
                       <div className={`admin-status admin-status--${status}`}>

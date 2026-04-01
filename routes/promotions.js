@@ -9,6 +9,10 @@ router.get('/', async function (req, res, next) {
     let result = await promotionController.GetAllPromotion();
     res.send(result)
 })
+router.get('/admin/all', CheckLogin, checkRole('admin', 'hotel_owner'), async function (req, res, next) {
+    let result = await promotionController.GetAllPromotionAdmin();
+    res.send(result)
+})
 // Hotel Owner: uu dai cua hotel minh
 router.get('/hotel/:hotelId', CheckLogin, checkRole('hotel_owner', 'admin'), checkHotelOwner, async function (req, res, next) {
     let result = await promotionController.GetPromotionsByHotel(req.params.hotelId);

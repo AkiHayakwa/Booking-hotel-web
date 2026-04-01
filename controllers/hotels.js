@@ -20,11 +20,19 @@ module.exports = {
         let roomTypeModel = require('../schemas/RoomType');
         let hotels = await hotelModel.find({ isDeleted: false, isApproved: true })
             .populate('owner', 'username fullName email')
-            .populate('amenities', 'name icon')
+    GetAllHotel: async function () {
+        const roomTypeModel = require('../schemas/RoomType');
+        // 1. Lấy danh sách khách sạn, thêm sort của admin-UI và lean() của main
+        let hotels = await hotelModel.find({ isDeleted: false, isApproved: true })
+            .populate('owner', 'username fullName email')
+            .populate('amenities', 'name icon') // Lấy name và icon như main yêu cầu
+            .sort({ createdAt: -1 }) // Giữ lại phần sort của bạn
             .lean();
-        // Tính minPrice từ roomTypes
+
+        // 2. Logic tính minPrice của nhánh main
         const roomTypesAll = await roomTypeModel.find({ isDeleted: false })
             .select('hotel pricePerNight').lean();
+        
         const rtMap = {};
         roomTypesAll.forEach(rt => {
             const hid = rt.hotel.toString();
@@ -32,12 +40,19 @@ module.exports = {
                 rtMap[hid] = rt.pricePerNight;
             }
         });
-        return hotels.map(h => ({ ...h, minPrice: rtMap[h._id.toString()] || null }));
+
+        // 3. Trả về kết quả đã map thêm minPrice
+        return hotels.map(h => ({ 
+            ...h, 
+            minPrice: rtMap[h._id.toString()] || null 
+        }));
+    },
     },
     GetAllHotelAdmin: async function () {
         return await hotelModel.find({ isDeleted: false })
             .populate('owner', 'username fullName email')
             .populate('amenities')
+            .sort({ createdAt: -1 })
     },
     GetHotelById: async function (id) {
         try {

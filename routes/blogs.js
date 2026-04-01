@@ -9,6 +9,10 @@ router.get('/', async function (req, res, next) {
     let result = await blogController.GetAllBlog();
     res.send(result)
 })
+router.get('/admin/all', CheckLogin, checkRole('admin'), async function (req, res, next) {
+    let result = await blogController.GetAllBlogAdmin();
+    res.send(result)
+})
 router.post('/', CheckLogin, checkRole('admin'), CreateBlogValidator, validatedResult, async function (req, res, next) {
     let { title, content, thumbnail, category, tags } = req.body;
     let result = await blogController.CreateBlog(title, content, thumbnail, category, req.user._id, tags);

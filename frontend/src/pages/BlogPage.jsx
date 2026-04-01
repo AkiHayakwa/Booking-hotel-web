@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import blogApi from '../api/blogApi';
 import './BlogPage.css';
 
 const PROVINCES_VN = [
@@ -27,6 +28,25 @@ export default function BlogPage() {
   const [guests, setGuests] = useState(2);
   const [rooms, setRooms] = useState(1);
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchBlogs = async () => {
+    try {
+      const res = await blogApi.getAll();
+      if (res.data) {
+        setBlogs(res.data.filter(b => b.isPublished));
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải bài viết:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
 
   const destRef = useRef(null);
   const guestRef = useRef(null);
@@ -225,20 +245,33 @@ export default function BlogPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <section className="mb-12">
-          <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden group">
-            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: "linear-gradient(to top, rgba(0,31,61,0.9), rgba(0,31,61,0.2)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuAqOqDi5USkkZTR2HTAnRBiCM5vxVtawvut_stN6C9S9ponqo3pxG8QinFM8BQfsKZc1P8Nf3p7yZfl9qPC1mvlP30o63JukvfecQdLsNmZQfxAKwaeBB5447p2FURqUL0qsUtHuV4WRW8noo2_avAAZWJtIKpDRorabDYqAzT-I2xatsDfBSzj2WhULI7I5gorg8py75viJGjPrH_Uca_VC8J0I2oPLXoOg4QQygvlXBpNBz4DVYWF7S-00kNm4HIbqJ_Kvo7LAA')" }}>
-            </div>
-            <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-16 max-w-3xl">
-              <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest uppercase bg-accent text-white rounded w-fit">Featured Post</span>
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">Top 10 Most Luxurious Resorts in Vietnam for 2024</h2>
-              <p className="text-white/80 text-lg mb-8 line-clamp-2">Experience the pinnacle of hospitality where traditional Vietnamese charm meets modern architectural marvels. Discover our handpicked selection of elite escapes.</p>
-              <div>
-                <button className="gold-gradient hover:opacity-90 text-primary font-bold px-8 py-3 rounded-lg flex items-center gap-2 transition-all">
-                  Read More <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                </button>
+          {loading ? (
+            <div className="w-full aspect-[21/9] rounded-xl bg-slate-200 animate-pulse flex items-center justify-center">Đang tải...</div>
+          ) : blogs.length > 0 ? (
+            <div 
+              className="relative w-full aspect-[21/9] rounded-xl overflow-hidden group cursor-pointer"
+              onClick={() => navigate(`/blog/${blogs[0].slug}`)}
+            >
+              <div 
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
+                style={{ 
+                  backgroundImage: `linear-gradient(to top, rgba(0,31,61,0.9), rgba(0,31,61,0.2)), url('${blogs[0].thumbnail || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1400&q=80'}')` 
+                }}
+              ></div>
+              <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-16 max-w-3xl">
+                <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest uppercase bg-accent text-white rounded w-fit">
+                  {blogs[0].category}
+                </span>
+                <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">{blogs[0].title}</h2>
+                <p className="text-white/80 text-lg mb-8 line-clamp-2">{blogs[0].content.substring(0, 150)}...</p>
+                <div>
+                  <button className="gold-gradient hover:opacity-90 text-primary font-bold px-8 py-3 rounded-lg flex items-center gap-2 transition-all">
+                    Read More <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </section>
 
         {/* Category Pills */}
@@ -254,61 +287,33 @@ export default function BlogPage() {
           {/* Main Content: Blog Grid */}
           <div className="flex-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Post Card 1 */}
-              <article className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-slate-100 dark:border-slate-800">
-                <div className="aspect-video bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB3RErgGE42Po-iC38i9IUq4eCZBNc12jU8E8ujaLyInzK_VDucLfIL8NxZisyZjie_xqivBWOD7i8VeZQGptH3Rf_qOTYFs5i5b-fpFtFIPOB63RH2-xN5TUjCZYn86IK2PP2n7rTEEOilWoe6EZM5RRPnImQt7aZBaMcG7SJYmit2iSEFWewYwFbvpoVCazYhiUmlYZjJuud2dP9BPcL4msKOoErBpBazH9Q-YPIuYTvKKpUc1hbKMx774Jd-NOb51zNEsjc6Mw')" }}></div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Travel Guides</span>
-                    <span className="text-xs text-slate-400">Oct 12, 2024</span>
+              {loading ? (
+                <div className="col-span-2 text-center py-12">Đang tải bài viết...</div>
+              ) : blogs.length > 1 ? blogs.slice(1).map(post => (
+                <article 
+                  key={post._id} 
+                  className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-slate-100 dark:border-slate-800 cursor-pointer"
+                  onClick={() => navigate(`/blog/${post.slug}`)}
+                >
+                  <div 
+                    className="aspect-video bg-cover bg-center" 
+                    style={{ backgroundImage: `url('${post.thumbnail || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&q=80'}')` }}
+                  ></div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-accent">{post.category}</span>
+                      <span className="text-xs text-slate-400">{new Date(post.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 hover:text-primary transition-colors cursor-pointer line-clamp-2">{post.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4 line-clamp-3">{post.content}</p>
+                    <span className="text-primary dark:text-accent font-bold text-sm flex items-center gap-1">Read Post <span className="material-symbols-outlined text-xs">open_in_new</span></span>
                   </div>
-                  <h3 className="text-xl font-bold mb-3 hover:text-primary transition-colors cursor-pointer">A Guide to Da Nang Nightlife</h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">From rooftop bars to the iconic Dragon Bridge, experience the electric energy of Da Nang after sunset...</p>
-                  <a className="text-primary dark:text-accent font-bold text-sm flex items-center gap-1" href="#read-more">Read Post <span className="material-symbols-outlined text-xs">open_in_new</span></a>
-                </div>
-              </article>
-
-              {/* Post Card 2 */}
-              <article className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-slate-100 dark:border-slate-800">
-                <div className="aspect-video bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAOoZUBqdSTplwjYCTWaF7m84J16nbBehlHdPqIBbz_CPQE9c10VupvVg-J05qznYMk3GogTtQyzelmTQnRYqrY-Pt9XdMJhpKfCwD44xipz-ZgPmlm-t4_lO3MWO8uhRIN3DvPtfqKs0d-4FjbdYyVjIwEKp7jvegsOE6aApnny34j7yFxU0EZjPfWdWUuXT8XkxOxlJaOLcUAgIBtahiWefKiXoU-kkDBmWwQm_Dguc2zwidJkolg43D_MbA-aQmBmo2qX1NvBA')" }}></div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Hotel Reviews</span>
-                    <span className="text-xs text-slate-400">Oct 10, 2024</span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 hover:text-primary transition-colors cursor-pointer">The Best Spas in Phu Quoc</h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">Rejuvenate your soul at these world-class spa retreats situated along the white sands of Phu Quoc island...</p>
-                  <a className="text-primary dark:text-accent font-bold text-sm flex items-center gap-1" href="#read-more">Read Post <span className="material-symbols-outlined text-xs">open_in_new</span></a>
-                </div>
-              </article>
-
-              {/* Post Card 3 */}
-              <article className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-slate-100 dark:border-slate-800">
-                <div className="aspect-video bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDMWephWvAreHGtgewV7SbdVx-I11yhh7J-wES1VYlNu9oDl9OVm2Ca9OUz-XiewztW8xIvYZ4cmIhMPMm-vmEe-jxIIaHbwPT7_cUMommJ9WHoBfNNdDxj-M8WOi-uRfMTQ_wYQojtbqw5OAaEbRRGFImGQjUA2X6X45t1GJBQO_b0sdzwIkXS9bjOBL12VVt4K5TNY_zLoKi1NHqT3oyk2-QGIsrxIgSas1sbTFu_3YxVb3dkQoauVi4x59gmyP0DuFdy2hRoSA')" }}></div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Food &amp; Culture</span>
-                    <span className="text-xs text-slate-400">Oct 08, 2024</span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 hover:text-primary transition-colors cursor-pointer">Hidden Gems in Hoi An</h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">Walk through the ancient lantern-lit streets and find hidden culinary treasures and craft workshops...</p>
-                  <a className="text-primary dark:text-accent font-bold text-sm flex items-center gap-1" href="#read-more">Read Post <span className="material-symbols-outlined text-xs">open_in_new</span></a>
-                </div>
-              </article>
-
-              {/* Post Card 4 */}
-              <article className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-slate-100 dark:border-slate-800">
-                <div className="aspect-video bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEpsX6d4LTGMdrySAQKZuCCdHRLyFtc-dPkcHo4JxTuVEe4eJiIu8KzdV1Xk5ptCCCjLeQArbUWzhIVFBkrOgW8rXt_TeebN_HflL9K9iRIVLuzyc6UnQDCzpTcBAjy2xqSyED7_y-hHEgcNUscQxEoYZTIs6yBtOPRAGl9z1pRPGnbiGlYXrLoIPd-cTIRTsom5WZF41mTLAQmZnpPRHOVxG7k3YN1UMnX9icpnZIZSu1fMiyNVXoigEIGR2YqFwMFB4SQuTyZw')" }}></div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Travel Tips</span>
-                    <span className="text-xs text-slate-400">Oct 05, 2024</span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 hover:text-primary transition-colors cursor-pointer">Exploring Sapa's Valleys</h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">Trek through misty mountains and golden rice terraces while learning about the local hill tribe cultures...</p>
-                  <a className="text-primary dark:text-accent font-bold text-sm flex items-center gap-1" href="#read-more">Read Post <span className="material-symbols-outlined text-xs">open_in_new</span></a>
-                </div>
-              </article>
+                </article>
+              )) : blogs.length === 1 ? (
+                <div className="col-span-2 text-center py-12 text-slate-500">Xem thêm các bài viết khác sắp ra mắt.</div>
+              ) : (
+                <div className="col-span-2 text-center py-12 text-slate-500">Chưa có bài viết nào được đăng.</div>
+              )}
             </div>
 
             {/* Pagination */}
