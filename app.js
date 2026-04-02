@@ -23,6 +23,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ── Register Mongoose Schemas (Before Routes) ──────────────────
+require('./schemas/Role');
+require('./schemas/User');
+require('./schemas/Hotel');
+require('./schemas/RoomType');
+require('./schemas/Room');
+require('./schemas/Booking');
+require('./schemas/Promotion');
+require('./schemas/Amenity');
+
+// ── Routes ──────────────────────────────────────────────────
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/roles', require('./routes/roles'));

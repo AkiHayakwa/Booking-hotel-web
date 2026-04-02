@@ -30,6 +30,11 @@ const hotelSchema = new mongoose.Schema(
       required: [true, "Email là bắt buộc"],
       match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Email không hợp lệ"]
     },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true
+    },
     starRating: {
       type: Number,
       required: [true, "Xếp hạng sao là bắt buộc"],

@@ -7,6 +7,11 @@ router.get('/', CheckLogin, checkRole('admin'), async function (req, res, next) 
     let result = await userController.GetAllUser();
     res.send(result)
 })
+router.get('/by-role/:roleName', CheckLogin, checkRole('admin'), async function (req, res, next) {
+    let result = await userController.GetUsersByRoleName(req.params.roleName);
+    res.send(result)
+})
+
 router.get('/:id', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await userController.GetUserById(req.params.id);
     if (!result) {
@@ -15,6 +20,7 @@ router.get('/:id', CheckLogin, checkRole('admin'), async function (req, res, nex
         res.send(result)
     }
 })
+
 router.put('/:id', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await userController.UpdateUser(req.params.id, req.body);
     if (!result) {
@@ -23,6 +29,7 @@ router.put('/:id', CheckLogin, checkRole('admin'), async function (req, res, nex
         res.send(result)
     }
 })
+
 router.delete('/:id', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await userController.DeleteUser(req.params.id);
     if (!result) {
@@ -31,6 +38,7 @@ router.delete('/:id', CheckLogin, checkRole('admin'), async function (req, res, 
         res.send(result)
     }
 })
+
 router.patch('/:id/toggle-active', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await userController.ToggleActive(req.params.id);
     if (!result) {
@@ -38,11 +46,6 @@ router.patch('/:id/toggle-active', CheckLogin, checkRole('admin'), async functio
     } else {
         res.send(result)
     }
-})
-
-router.get('/by-role/:roleName', CheckLogin, checkRole('admin'), async function (req, res, next) {
-    let result = await userController.GetUsersByRoleName(req.params.roleName);
-    res.send(result)
 })
 
 module.exports = router;
