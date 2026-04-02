@@ -30,9 +30,9 @@ router.get('/:id', CheckLogin, async function (req, res, next) {
 // Customer: dat phong
 router.post('/', CheckLogin, checkRole('customer'), CreateBookingValidator, validatedResult, async function (req, res, next) {
     try {
-        let { hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount } = req.body;
+        let { hotel, rooms, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount } = req.body;
         let result = await bookingController.CreateBooking(
-            req.user._id, hotel, room, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount
+            req.user._id, hotel, rooms, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount
         );
         if (result.error) {
             return res.status(400).json({ message: result.error });

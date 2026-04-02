@@ -1,0 +1,166 @@
+/* ═══ Owner Reviews Page ═══ */
+
+/* ── Overview Card ── */
+.orv-overview {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.orv-overview__score {
+  text-align: center;
+  min-width: 120px;
+}
+
+.orv-overview__avg {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.orv-overview__total {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.orv-overview__dist {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Distribution Row ── */
+.orv-dist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.orv-dist-label {
+  width: 28px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+  text-align: right;
+}
+
+.orv-dist-track {
+  flex: 1;
+  height: 10px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.orv-dist-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.orv-dist-count {
+  width: 28px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-align: left;
+}
+
+/* ── Stars ── */
+.orv-stars {
+  display: inline-flex;
+  gap: 1px;
+}
+
+/* ── Review Cards List ── */
+.orv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.orv-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  padding: 1.25rem 1.5rem;
+  transition: box-shadow 0.15s;
+}
+
+.orv-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+.orv-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.orv-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.orv-card__user {
+  flex: 1;
+  min-width: 0;
+}
+
+.orv-card__name {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+
+.orv-card__date {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.orv-card__comment {
+  margin-top: 0.75rem;
+  color: #475569;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  padding-left: 52px; /* align with name */
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .orv-overview {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .orv-overview__score {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    min-width: unset;
+  }
+
+  .orv-overview__avg {
+    font-size: 2rem;
+  }
+
+  .orv-card__comment {
+    padding-left: 0;
+  }
+}

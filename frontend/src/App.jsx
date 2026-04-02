@@ -12,7 +12,9 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import HomePage from './pages/HomePage';
 import PromotionsPage from './pages/PromotionsPage';
 import HotelsPage from './pages/HotelsPage';
+import HotelDetails from './pages/HotelDetails';
 import BlogPage from './pages/BlogPage';
+import PaymentResultPage from './pages/PaymentResultPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminBookingsPage from './pages/AdminBookingsPage';
@@ -21,7 +23,9 @@ import AdminUsersPage from './pages/AdminUsersPage';
 import AdminReportsPage from './pages/AdminReportsPage';
 import AdminRoomsPage from './pages/AdminRoomsPage';
 import AdminPromotionsPage from './pages/AdminPromotionsPage';
+import AdminAmenitiesPage from './pages/AdminAmenitiesPage';
 import AdminBlogsPage from './pages/AdminBlogsPage';
+import AdminReviewsPage from './pages/AdminReviewsPage';
 import './index.css';
 
 import OwnerDashboardPage from './pages/OwnerDashboardPage';
@@ -29,6 +33,8 @@ import OwnerHotelPage from './pages/OwnerHotelPage';
 import OwnerRoomTypesPage from './pages/OwnerRoomTypesPage';
 import OwnerRoomsPage from './pages/OwnerRoomsPage';
 import OwnerBookingsPage from './pages/OwnerBookingsPage';
+import OwnerPromotionsPage from './pages/OwnerPromotionsPage';
+import OwnerReviewsPage from './pages/OwnerReviewsPage';
 import OwnerSettingsPage from './pages/OwnerSettingsPage';
 
 function OwnerWrapper({ children }) {
@@ -53,7 +59,9 @@ function App() {
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/reports" element={<AdminReportsPage />} />
           <Route path="/admin/rooms" element={<AdminRoomsPage />} />
+          <Route path="/admin/amenities" element={<AdminAmenitiesPage />} />
           <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
+          <Route path="/admin/reviews" element={<AdminReviewsPage />} />
           <Route path="/admin/blogs" element={<AdminBlogsPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
 
@@ -66,8 +74,8 @@ function App() {
           <Route path="/owner/room-types" element={<OwnerWrapper><OwnerRoomTypesPage /></OwnerWrapper>} />
           <Route path="/owner/rooms" element={<OwnerWrapper><OwnerRoomsPage /></OwnerWrapper>} />
           <Route path="/owner/bookings" element={<OwnerWrapper><OwnerBookingsPage /></OwnerWrapper>} />
-          {/* <Route path="/owner/promotions" element={<OwnerWrapper><OwnerPromotionsPage /></OwnerWrapper>} /> */}
-          {/* <Route path="/owner/reviews"    element={<OwnerWrapper><OwnerReviewsPage /></OwnerWrapper>} /> */}
+          <Route path="/owner/promotions" element={<OwnerWrapper><OwnerPromotionsPage /></OwnerWrapper>} />
+          <Route path="/owner/reviews" element={<OwnerWrapper><OwnerReviewsPage /></OwnerWrapper>} />
           <Route path="/owner/settings" element={<OwnerWrapper><OwnerSettingsPage /></OwnerWrapper>} />
 
           {/* ── Public routes (with Header / Footer) ── */}
@@ -85,7 +93,9 @@ function App() {
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/promotions" element={<PromotionsPage />} />
                   <Route path="/hotels" element={<HotelsPage />} />
+                  <Route path="/hotels/:id" element={<HotelDetails />} />
                   <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/payment-result" element={<PaymentResultPage />} />
                 </Routes>
                 <Footer />
               </div>

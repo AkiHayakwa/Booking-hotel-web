@@ -25,6 +25,12 @@ export default function AdminBlogsPage() {
     isPublished: false
   });
 
+  // Khai báo state cho Quản lý Bình Luận
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [selectedBlogForComments, setSelectedBlogForComments] = useState(null);
+  const [commentsList, setCommentsList] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -106,6 +112,41 @@ export default function AdminBlogsPage() {
     }
   };
 
+  // Các hàm xử lý Quản lý Bình luận
+  const handleOpenCommentModal = async (blog) => {
+    setSelectedBlogForComments(blog);
+    setShowCommentModal(true);
+    setLoadingComments(true);
+    try {
+      const res = await blogApi.getComments(blog._id);
+      // Lọc bỏ schema bình luận đã xoá (vì backend return mảng luôn)
+      setCommentsList(res.data || []);
+    } catch (error) {
+      console.error("Lỗi khi tải bình luận:", error);
+      alert("Không thể tải danh sách bình luận!");
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (window.confirm("Bạn có chắc muốn xóa bình luận này? Thao tác không thể hoàn tác.")) {
+      try {
+        await blogApi.deleteComment(selectedBlogForComments._id, commentId);
+        // Xoá bình luận khỏi UI modal
+        setCommentsList(prev => prev.filter(c => c._id !== commentId));
+        // Trừ đi bộ đếm comment của blog đang xem khỏi UI bảng bên ngoài
+        setBlogs(prev => prev.map(b => 
+          b._id === selectedBlogForComments._id 
+            ? { ...b, commentCount: Math.max(0, (b.commentCount || 1) - 1) } 
+            : b
+        ));
+      } catch (error) {
+        alert("Lỗi khi xóa bình luận");
+      }
+    }
+  };
+
   return (
     <AdminLayout activePath="/admin/blogs" searchPlaceholder="Tìm kiếm bài viết...">
       <div className="admin-blogs">
@@ -157,7 +198,17 @@ export default function AdminBlogsPage() {
                         </span>
                       </td>
                       <td>{new Date(b.createdAt).toLocaleDateString()}</td>
-                      <td>{b.commentCount || 0}</td>
+                      <td>
+                        <button 
+                          className="admin-badge admin-badge--pointer" 
+                          style={{ backgroundColor: '#e0f2fe', color: '#0284c7', border: 'none', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                          onClick={() => handleOpenCommentModal(b)}
+                          title="Xem & Quản lý bình luận"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>chat</span>
+                          <span style={{ fontWeight: '800' }}>{b.commentCount || 0}</span>
+                        </button>
+                      </td>
                       <td>
                         <div className="publish-toggle" onClick={() => handleTogglePublish(b._id)}>
                           <span className={`admin-badge admin-badge--${b.isPublished ? 'active' : 'pending'}`}>
@@ -259,6 +310,62 @@ export default function AdminBlogsPage() {
                 <button type="submit" className="btn-primary">Lưu bài viết</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- Cửa sổ Quản lý Bình luận --- */}
+      {showCommentModal && selectedBlogForComments && (
+        <div className="admin-modal-overlay">
+          <div className="admin-modal admin-modal--comments">
+            <div className="admin-modal__header">
+              <h3>
+                <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: '8px' }}>forum</span>
+                Bình luận: <span style={{fontWeight:'500'}}>{selectedBlogForComments.title}</span>
+              </h3>
+              <button 
+                className="admin-modal__close" 
+                onClick={() => { setShowCommentModal(false); setSelectedBlogForComments(null); }}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            
+            <div className="admin-comments-list">
+              {loadingComments ? (
+                <div style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748b' }}>
+                  <span className="material-symbols-outlined ohp-btn-spin" style={{fontSize: '2rem'}}>autorenew</span>
+                  <p>Đang tải danh sách bình luận...</p>
+                </div>
+              ) : commentsList.length > 0 ? (
+                commentsList.map(comment => (
+                  <div key={comment._id} className="admin-comment-item">
+                    <div className="admin-comment-avatar">
+                      <img src={comment.user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.user?.fullName || 'User')}&background=0284c7&color=fff`} alt="avatar" />
+                    </div>
+                    <div className="admin-comment-content">
+                      <div className="admin-comment-header">
+                        <span className="admin-comment-author">{comment.user?.fullName || 'Khách viếng thăm'}</span>
+                        <span className="admin-comment-date">{new Date(comment.createdAt).toLocaleString('vi-VN')}</span>
+                      </div>
+                      <p className="admin-comment-text">{comment.content}</p>
+                    </div>
+                    <button 
+                      className="admin-comment-delete-btn" 
+                      onClick={() => handleDeleteComment(comment._id)}
+                      title="Xóa vĩnh viễn bình luận này"
+                    >
+                      <span className="material-symbols-outlined">delete_forever</span>
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="admin-comments-empty">
+                  <span className="material-symbols-outlined">chat_bubble_outline</span>
+                  <p>Bài viết chưa có bình luận nào.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

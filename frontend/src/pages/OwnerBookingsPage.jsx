@@ -124,18 +124,26 @@ function DetailDrawer({ booking, onClose, onAction, actionLoading }) {
             </p>
             <div className="obk-drawer__row">
               <span className="obk-drawer__row-label">Mã phòng</span>
-              <span className="obk-drawer__row-value">{booking.room?.roomNumber || '—'}</span>
+              <span className="obk-drawer__row-value">
+                {booking.rooms && booking.rooms.length > 0
+                  ? booking.rooms.map(r => r.roomNumber).join(', ')
+                  : '—'}
+              </span>
             </div>
-            {booking.room?.roomType && (
+            {booking.rooms && booking.rooms.length > 0 && booking.rooms[0]?.roomType && (
               <div className="obk-drawer__row">
                 <span className="obk-drawer__row-label">Loại phòng</span>
-                <span className="obk-drawer__row-value">{booking.room.roomType?.name || booking.room.roomType}</span>
+                <span className="obk-drawer__row-value">
+                  {booking.rooms.map(r => r.roomType?.name || r.roomType).filter(Boolean).join(', ') || '—'}
+                </span>
               </div>
             )}
-            {booking.room?.floor !== undefined && (
+            {booking.rooms && booking.rooms.length > 0 && booking.rooms[0]?.floor !== undefined && (
               <div className="obk-drawer__row">
                 <span className="obk-drawer__row-label">Tầng</span>
-                <span className="obk-drawer__row-value">Tầng {booking.room.floor}</span>
+                <span className="obk-drawer__row-value">
+                  {[...new Set(booking.rooms.map(r => r.floor))].map(f => `Tầng ${f}`).join(', ')}
+                </span>
               </div>
             )}
           </div>
@@ -314,7 +322,7 @@ export default function OwnerBookingsPage() {
         (b.user?.fullName || '').toLowerCase().includes(s) ||
         (b.user?.username || '').toLowerCase().includes(s) ||
         (b.user?.email || '').toLowerCase().includes(s) ||
-        (b.room?.roomNumber || '').toLowerCase().includes(s)
+        (b.rooms || []).some(r => (r.roomNumber || '').toLowerCase().includes(s))
       );
     });
 
@@ -518,10 +526,10 @@ export default function OwnerBookingsPage() {
 
                           {/* Phòng */}
                           <td style={{ color:'#475569', fontSize:'0.875rem' }}>
-                            <b>{b.room?.roomNumber || '—'}</b>
-                            {b.room?.roomType?.name && (
+                            <b>{b.rooms && b.rooms.length > 0 ? b.rooms.map(r => r.roomNumber).join(', ') : '—'}</b>
+                            {b.rooms && b.rooms.length > 0 && b.rooms[0]?.roomType?.name && (
                               <div style={{ fontSize:'0.72rem', color:'#94a3b8' }}>
-                                {b.room.roomType.name}
+                                {b.rooms.map(r => r.roomType?.name).filter(Boolean).join(', ')}
                               </div>
                             )}
                           </td>

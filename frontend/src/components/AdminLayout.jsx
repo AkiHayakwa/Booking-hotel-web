@@ -7,8 +7,10 @@ const NAV_MAIN = [
   { path: '/admin/bookings',  icon: 'calendar_month', label: 'Bookings'  },
   { path: '/admin/hotels',    icon: 'hotel',          label: 'Hotels'    },
   { path: '/admin/rooms',     icon: 'meeting_room',   label: 'Rooms'     },
+  { path: '/admin/amenities', icon: 'star',           label: 'Amenities' },
   { path: '/admin/users',     icon: 'group',          label: 'Users'     },
   { path: '/admin/promotions', icon: 'campaign',       label: 'Promotions' },
+  { path: '/admin/reviews',    icon: 'reviews',        label: 'Reviews'    },
   { path: '/admin/blogs',     icon: 'article',        label: 'Blogs'     },
   { path: '/admin/reports',   icon: 'bar_chart',      label: 'Reports'   },
 ];

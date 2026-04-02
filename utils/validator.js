@@ -37,7 +37,8 @@ module.exports = {
     ],
     CreateBookingValidator: [
         body('hotel').notEmpty().withMessage("hotel khong duoc de trong").bail().isMongoId().withMessage("hotel phai la ID"),
-        body('room').notEmpty().withMessage("room khong duoc de trong").bail().isMongoId().withMessage("room phai la ID"),
+        body('rooms').notEmpty().withMessage("rooms khong duoc de trong").bail().isArray().withMessage("rooms phai la mảng"),
+        body('rooms.*').isMongoId().withMessage("mỗi phần tử trong rooms phai la ID"),
         body('checkInDate').notEmpty().withMessage("checkInDate khong duoc de trong").bail().isISO8601().withMessage("checkInDate sai dinh dang"),
         body('checkOutDate').notEmpty().withMessage("checkOutDate khong duoc de trong").bail().isISO8601().withMessage("checkOutDate sai dinh dang"),
         body('numberOfGuests').notEmpty().withMessage("numberOfGuests khong duoc de trong").bail().isInt({ min: 1 }).withMessage("numberOfGuests phai >= 1"),

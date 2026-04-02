@@ -298,7 +298,19 @@ export default function PromotionsPage() {
                 <code className="promo-code-text" style={{display: 'block', margin: '0.5rem 0', color: '#d4af37', fontWeight: 'bold'}}>
                   CODE: {p.promoCode || 'AUTO_APPLY'}
                 </code>
-                <button className="promo-card__btn" onClick={() => navigate('/hotels')}>Nhận ưu đãi</button>
+                <button className="promo-card__btn" onClick={() => {
+                  if (p.hotel) {
+                    const hotelId = p.hotel._id || p.hotel;
+                    const params = new URLSearchParams();
+                    params.set('promoCode', p.promoCode || '');
+                    params.set('discountType', p.discountType);
+                    params.set('discountValue', p.discountValue);
+                    params.set('promoTitle', p.title || '');
+                    navigate(`/hotels/${hotelId}?${params.toString()}`);
+                  } else {
+                    navigate('/hotels');
+                  }
+                }}>Nhận ưu đãi</button>
               </div>
             </div>
           )) : (

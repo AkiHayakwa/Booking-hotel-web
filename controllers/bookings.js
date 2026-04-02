@@ -2,14 +2,10 @@ let bookingModel = require("../schemas/Booking");
 let roomModel = require("../schemas/Room");
 
 module.exports = {
-    CreateBooking: async function (userId, hotelId, roomId, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount) {
+    CreateBooking: async function (userId, hotelId, rooms, checkInDate, checkOutDate, numberOfGuests, specialRequests, promotionId, discountAmount) {
         try {
-            let room = await roomModel.findById(roomId).populate('roomType');
-            if (!room) {
-                return { error: 'Không tìm thấy phòng (Room ID không hợp lệ)' };
-            }
-            if (!room.roomType) {
-                return { error: 'Phòng này chưa được gán Loại Phòng hợp lệ' };
+            if (!Array.isArray(rooms) || rooms.length === 0) {
+                return { error: 'Danh sách phòng không hợp lệ' };
             }
 
             let nights = (new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24);
@@ -17,7 +13,14 @@ module.exports = {
                 return { error: 'Ngày trả phòng phải sau ngày nhận phòng' };
             }
 
-            let totalPrice = room.roomType.pricePerNight * nights;
+            let totalPrice = 0;
+            for (let roomId of rooms) {
+                let room = await roomModel.findById(roomId).populate('roomType');
+                if (!room) return { error: `Không tìm thấy phòng (ID: ${roomId})` };
+                if (!room.roomType) return { error: `Phòng ${room.roomNumber} chưa được gán Loại Phòng hợp lệ` };
+                totalPrice += room.roomType.pricePerNight * nights;
+            }
+
             if (discountAmount) {
                 totalPrice = totalPrice - discountAmount;
             }
@@ -26,7 +29,7 @@ module.exports = {
             let newItem = new bookingModel({
                 user: userId,
                 hotel: hotelId,
-                room: roomId,
+                rooms: rooms,
                 checkInDate: checkInDate,
                 checkOutDate: checkOutDate,
                 numberOfGuests: numberOfGuests,
@@ -47,19 +50,19 @@ module.exports = {
         return await bookingModel.find({ isDeleted: false })
             .populate('user', 'username email fullName')
             .populate('hotel', 'name city')
-            .populate({ path: 'room', populate: { path: 'roomType' } })
+            .populate({ path: 'rooms', populate: { path: 'roomType' } })
     },
     GetBookingsByHotel: async function (hotelId) {
         return await bookingModel.find({ hotel: hotelId, isDeleted: false })
             .populate('user', 'username email fullName')
-            .populate({ path: 'room', populate: { path: 'roomType' } })
+            .populate({ path: 'rooms', populate: { path: 'roomType' } })
     },
     GetBookingById: async function (id) {
         try {
             return await bookingModel.findOne({ _id: id, isDeleted: false })
                 .populate('user', 'username email fullName')
                 .populate('hotel', 'name city')
-                .populate({ path: 'room', populate: { path: 'roomType' } })
+                .populate({ path: 'rooms', populate: { path: 'roomType' } })
                 .populate('promotion')
         } catch (error) {
             return false;
@@ -68,7 +71,7 @@ module.exports = {
     GetMyBookings: async function (userId) {
         return await bookingModel.find({ user: userId, isDeleted: false })
             .populate('hotel', 'name city images')
-            .populate({ path: 'room', populate: { path: 'roomType' } })
+            .populate({ path: 'rooms', populate: { path: 'roomType' } })
     },
     ConfirmBooking: async function (id) {
         try {
@@ -87,7 +90,7 @@ module.exports = {
             if (!booking || booking.status !== 'confirmed') return false;
             booking.status = 'checked_in';
             await booking.save();
-            await roomModel.findByIdAndUpdate(booking.room, { status: 'occupied' });
+            await roomModel.updateMany({ _id: { $in: booking.rooms } }, { status: 'occupied' });
             return booking;
         } catch (error) {
             return false;
@@ -99,7 +102,7 @@ module.exports = {
             if (!booking || booking.status !== 'checked_in') return false;
             booking.status = 'checked_out';
             await booking.save();
-            await roomModel.findByIdAndUpdate(booking.room, { status: 'available' });
+            await roomModel.updateMany({ _id: { $in: booking.rooms } }, { status: 'available' });
             return booking;
         } catch (error) {
             return false;

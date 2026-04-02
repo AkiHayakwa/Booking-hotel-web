@@ -6,6 +6,13 @@ const roomApi = {
     return axiosClient.get(`/rooms/hotel/${hotelId}`);
   },
 
+  // Lấy danh sách phòng trống theo ngày checkin/checkout và số khách
+  getAvailable: (hotelId, checkIn, checkOut, guests) => {
+    return axiosClient.get(`/rooms/available/${hotelId}`, {
+      params: { checkIn, checkOut, guests }
+    });
+  },
+
   // Lõi tạo phòng mới theo Khách sạn (Hotel ID)
   create: (hotelId, data) => {
     return axiosClient.post(`/rooms/${hotelId}`, data);
