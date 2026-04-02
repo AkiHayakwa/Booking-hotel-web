@@ -47,6 +47,52 @@ module.exports.getMe = async (req, res) => {
   }
 };
 
+// PUT /api/auth/me
+// Hàm cập nhật thông tin cá nhân của người dùng đang đăng nhập
+module.exports.updateMe = async (req, res) => {
+  try {
+    const { fullName, phone, birthday, gender, address, avatarUrl, notificationSettings } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Các trường được phép cập nhật
+    if (fullName !== undefined) user.fullName = fullName;
+    if (phone !== undefined) user.phone = phone;
+    if (birthday !== undefined) user.birthday = birthday;
+    if (gender !== undefined) user.gender = gender;
+    if (address !== undefined) user.address = address;
+    if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
+    if (notificationSettings !== undefined) {
+      user.notificationSettings = { ...user.notificationSettings, ...notificationSettings };
+    }
+
+    await user.save();
+
+    res.json({
+      message: 'Cập nhật thông tin thành công',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        fullName: user.fullName,
+        phone: user.phone,
+        birthday: user.birthday,
+        gender: user.gender,
+        address: user.address,
+        avatarUrl: user.avatarUrl,
+        notificationSettings: user.notificationSettings
+      }
+    });
+  } catch (error) {
+    console.error('Update me error:', error);
+    res.status(500).json({ message: 'Lỗi cập nhật thông tin cá nhân' });
+  }
+};
+
 // POST /api/auth/register
 module.exports.register = async (req, res) => {
   try {
@@ -96,4 +142,24 @@ module.exports.register = async (req, res) => {
 module.exports.logout = async (req, res) => {
   res.cookie('TOKEN_HOTEL', null, { maxAge: 0 });
   res.json({ message: 'Đăng xuất thành công' });
+};
+
+// DELETE /api/auth/me
+module.exports.deleteMe = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    user.isDeleted = true;
+    await user.save();
+
+    res.cookie('TOKEN_HOTEL', null, { maxAge: 0 });
+    res.json({ message: 'Tài khoản đã được xóa thành công' });
+  } catch (error) {
+    console.error('Delete me error:', error);
+    res.status(500).json({ message: 'Lỗi khi xóa tài khoản' });
+  }
 };

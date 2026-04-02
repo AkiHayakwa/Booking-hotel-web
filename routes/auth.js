@@ -237,6 +237,8 @@ router.post('/register', RegisterValidator, validatedResult, authController.regi
 
 // Lấy thông tin phiên đăng nhập
 router.get('/me', CheckLogin, authController.getMe);
+router.put('/me', CheckLogin, authController.updateMe);
+router.delete('/me', CheckLogin, authController.deleteMe);
 router.post('/changepassword', CheckLogin, ChangePasswordValidator, validatedResult, async function (req, res, next) {
     let { oldpassword, newpassword } = req.body;
     let user = req.user;

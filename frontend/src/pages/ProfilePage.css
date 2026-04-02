@@ -1,0 +1,100 @@
+.profile-page {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-page input:focus, 
+.profile-page textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 31, 61, 0.1);
+}
+
+.profile-page .bg-primary {
+    background-color: var(--primary-color, #001f3d);
+}
+
+.profile-page .text-primary {
+    color: var(--primary-color, #001f3d);
+}
+
+.profile-page .text-accent-gold {
+    color: #c5a059;
+}
+
+.profile-page .bg-accent-gold {
+    background-color: #c5a059;
+}
+
+.profile-page .border-accent-gold {
+    border-color: #c5a059;
+}
+
+/* Material Icons Integration */
+.profile-page .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.profile-page .fill-gold {
+    font-variation-settings: 'FILL' 1;
+    color: #c5a059;
+}
+
+/* Custom Scrollbar for Textarea */
+.profile-page textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+.profile-page textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.profile-page textarea::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.profile-page textarea::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Dark Mode Adjustments */
+.dark .profile-page .bg-white {
+    background-color: #0f172a;
+}
+
+.dark .profile-page .border-slate-200 {
+    border-color: #1e293b;
+}
+
+.dark .profile-page .text-slate-900 {
+    color: #f8fafc;
+}
+
+.dark .profile-page .text-slate-600 {
+    color: #94a3b8;
+}
+
+/* Shadow for interactive cards */
+.profile-page .rounded-xl {
+    transition: box-shadow 0.3s ease;
+}
+
+.profile-page .rounded-xl:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Progress bar animation */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.profile-page .bg-accent-gold {
+    background: linear-gradient(90deg, #c5a059 0%, #ecd06f 50%, #c5a059 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite linear;
+}

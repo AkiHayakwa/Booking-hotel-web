@@ -53,6 +53,25 @@ const userSchema = new mongoose.Schema(
     googleId: {
       type: String,
       default: null
+    },
+    birthday: {
+      type: Date,
+      default: null
+    },
+    gender: {
+      type: String,
+      enum: ['male', 'female', 'other'],
+      default: 'other'
+    },
+    address: {
+      type: String,
+      default: ""
+    },
+    notificationSettings: {
+      promotions: { type: Boolean, default: true },
+      bookingConfirmations: { type: Boolean, default: true }, // Usually mandatory
+      scheduleReminders: { type: Boolean, default: true },
+      messages: { type: Boolean, default: true }
     }
   },
   {

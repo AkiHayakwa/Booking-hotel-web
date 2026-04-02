@@ -1,0 +1,64 @@
+.settings-page {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-page .bg-primary {
+    background-color: #001f3d;
+}
+
+.settings-page .bg-accent {
+    background-color: #c5a059;
+}
+
+.settings-page .text-accent {
+    color: #c5a059;
+}
+
+.settings-page .bg-accent\/10 {
+    background-color: rgba(197, 160, 89, 0.1);
+}
+
+.settings-page .bg-accent\/20 {
+    background-color: rgba(197, 160, 89, 0.2);
+}
+
+.settings-page .peer-checked\:bg-accent:checked ~ .peer {
+    background-color: #c5a059;
+}
+
+/* Custom Switch Styling */
+.settings-page .after\:content-\[\'\'\]::after {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Sidebar Hover/Active States */
+.settings-page aside nav button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-page aside nav button:hover:not(.bg-primary) {
+    transform: translateX(4px);
+}
+
+.dark .settings-page .bg-slate-900 {
+    background-color: #0f172a;
+}
+
+.settings-page .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+.settings-page .bg-primary .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+@media (max-width: 1024px) {
+    .settings-page aside {
+        position: static;
+    }
+}

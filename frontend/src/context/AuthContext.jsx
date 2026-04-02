@@ -51,8 +51,18 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    try {
+      const res = await authApi.getMe();
+      setUser(res.data);
+      return res.data;
+    } catch (error) {
+      console.error('Refresh user error:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, googleLogin, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, googleLogin, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

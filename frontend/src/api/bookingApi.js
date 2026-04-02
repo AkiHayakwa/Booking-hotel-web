@@ -4,6 +4,9 @@ const bookingApi = {
   getAll: (params) => {
     return axiosClient.get('/bookings', { params });
   },
+  getMyBookings: () => {
+    return axiosClient.get('/bookings/my-bookings');
+  },
   create: (data) => {
     return axiosClient.post('/bookings', data);
   },

@@ -69,7 +69,7 @@ export default function Header() {
                     <p className="text-sm font-bold text-primary dark:text-slate-100 leading-tight">
                       {user.fullName || user.username || "Nguyễn An"}
                     </p>
-                    <p className="text-[10px] text-slate-400 font-medium">{user.role === 'admin' ? 'Quản trị viên' : 'Thành viên Vàng'}</p>
+                    <p className="text-[10px] text-slate-400 font-medium">{user.role?.name === 'admin' ? 'Quản trị viên' : user.role?.name === 'owner' ? 'Chủ khách sạn' : 'Thành viên Gold'}</p>
                   </div>
                   <span className="material-symbols-outlined text-slate-400 group-hover:text-primary dark:group-hover:text-accent transition-colors text-lg">
                     expand_more
@@ -100,25 +100,33 @@ export default function Header() {
                     
                     {/* Primary Quick-access Items */}
                     <div className="py-2">
-                      <a className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" href="#">
+                      <Link 
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" 
+                        to="/profile"
+                        onClick={() => setShowDropdown(false)}
+                      >
                         <span className="material-symbols-outlined text-slate-400 group-hover:text-primary dark:group-hover:text-accent">person_outline</span>
                         <span className="text-sm font-medium">Thông tin cá nhân</span>
-                      </a>
-                      <a className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" href="#">
+                      </Link>
+                      <Link 
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" 
+                        to="/my-bookings"
+                        onClick={() => setShowDropdown(false)}
+                      >
                         <span className="material-symbols-outlined text-slate-400 group-hover:text-primary dark:group-hover:text-accent">calendar_month</span>
                         <span className="text-sm font-medium">Đặt chỗ của tôi</span>
-                      </a>
-                      <a className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" href="#">
-                        <span className="material-symbols-outlined text-slate-400 group-hover:text-primary dark:group-hover:text-accent">favorite_border</span>
-                        <span className="text-sm font-medium">Danh sách yêu thích</span>
-                      </a>
+                      </Link>
                       <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-5"></div>
                       
                       {/* Separate Settings Section */}
-                      <a className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" href="#">
+                      <Link 
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" 
+                        to="/settings"
+                        onClick={() => setShowDropdown(false)}
+                      >
                         <span className="material-symbols-outlined text-slate-400 group-hover:text-primary dark:group-hover:text-accent">settings</span>
                         <span className="text-sm font-medium">Cài đặt</span>
-                      </a>
+                      </Link>
                       <a className="flex items-center gap-3 px-5 py-3 text-slate-700 dark:text-slate-300 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors group" href="#">
                         <span className="material-symbols-outlined text-slate-400 group-hover:text-primary dark:group-hover:text-accent">help_outline</span>
                         <span className="text-sm font-medium">Trợ giúp</span>
