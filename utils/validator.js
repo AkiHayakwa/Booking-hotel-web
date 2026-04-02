@@ -36,17 +36,27 @@ module.exports = {
         }).withMessage("password phai co it nhat 8 ki tu trong do co it nhat 1 ki tu chu hoa, 1 ki tu chu thuong, 1 ki tu so va 1 ki tu dac biet"),
     ],
     CreateBookingValidator: [
-        body('hotel').notEmpty().withMessage("hotel khong duoc de trong").bail().isMongoId().withMessage("hotel phai la ID"),
-        body('rooms').notEmpty().withMessage("rooms khong duoc de trong").bail().isArray().withMessage("rooms phai la mảng"),
-        body('rooms.*').isMongoId().withMessage("mỗi phần tử trong rooms phai la ID"),
-        body('checkInDate').notEmpty().withMessage("checkInDate khong duoc de trong").bail().isISO8601().withMessage("checkInDate sai dinh dang"),
-        body('checkOutDate').notEmpty().withMessage("checkOutDate khong duoc de trong").bail().isISO8601().withMessage("checkOutDate sai dinh dang"),
-        body('numberOfGuests').notEmpty().withMessage("numberOfGuests khong duoc de trong").bail().isInt({ min: 1 }).withMessage("numberOfGuests phai >= 1"),
+        body('hotel').notEmpty().withMessage("hotel không được để trống").bail().isMongoId().withMessage("hotel phải là ID"),
+        body('rooms').notEmpty().withMessage("rooms không được để trống").bail().isArray().withMessage("rooms phải là mảng"),
+        body('rooms.*').isMongoId().withMessage("mỗi phần tử trong rooms phải là ID"),
+        body('checkInDate').notEmpty().withMessage("checkInDate không được để trống").bail().isISO8601().withMessage("checkInDate sai định dạng").custom((value) => {
+            if (new Date(value).setHours(0,0,0,0) < new Date().setHours(0,0,0,0)) {
+                throw new Error("Ngày nhận phòng không thể trong quá khứ");
+            }
+            return true;
+        }),
+        body('checkOutDate').notEmpty().withMessage("checkOutDate không được để trống").bail().isISO8601().withMessage("checkOutDate sai định dạng").custom((value, { req }) => {
+            if (new Date(value) <= new Date(req.body.checkInDate)) {
+                throw new Error("Ngày trả phòng phải sau ngày nhận phòng");
+            }
+            return true;
+        }),
+        body('numberOfGuests').notEmpty().withMessage("numberOfGuests không được để trống").bail().isInt({ min: 1 }).withMessage("numberOfGuests phải >= 1"),
     ],
     CreateRoomTypeValidator: [
-        body('name').notEmpty().withMessage("name khong duoc de trong"),
-        body('pricePerNight').notEmpty().withMessage("pricePerNight khong duoc de trong").bail().isFloat({ min: 0 }).withMessage("pricePerNight phai >= 0"),
-        body('maxGuests').notEmpty().withMessage("maxGuests khong duoc de trong").bail().isInt({ min: 1 }).withMessage("maxGuests phai >= 1"),
+        body('name').notEmpty().withMessage("name không được để trống"),
+        body('pricePerNight').notEmpty().withMessage("pricePerNight không được để trống").bail().isFloat({ min: 1000 }).withMessage("Giá phòng phải >= 1,000 VNĐ"),
+        body('maxGuests').notEmpty().withMessage("maxGuests không được để trống").bail().isInt({ min: 1 }).withMessage("maxGuests phải >= 1"),
     ],
     CreateRoomValidator: [
         body('roomNumber').notEmpty().withMessage("roomNumber khong duoc de trong"),
@@ -63,12 +73,22 @@ module.exports = {
         body('content').notEmpty().withMessage("content khong duoc de trong"),
     ],
     CreatePromotionValidator: [
-        body('title').notEmpty().withMessage("title khong duoc de trong"),
-        body('hotel').notEmpty().withMessage("hotel khong duoc de trong").bail().isMongoId().withMessage("hotel phai la ID"),
-        body('discountType').notEmpty().withMessage("discountType khong duoc de trong").bail().isIn(['percentage', 'fixed_amount']).withMessage("discountType phai la percentage hoac fixed_amount"),
-        body('discountValue').notEmpty().withMessage("discountValue khong duoc de trong").bail().isFloat({ min: 0 }).withMessage("discountValue phai >= 0"),
-        body('startDate').notEmpty().withMessage("startDate khong duoc de trong").bail().isISO8601().withMessage("startDate sai dinh dang"),
-        body('endDate').notEmpty().withMessage("endDate khong duoc de trong").bail().isISO8601().withMessage("endDate sai dinh dang"),
+        body('title').notEmpty().withMessage("title không được để trống"),
+        body('hotel').notEmpty().withMessage("hotel không được để trống").bail().isMongoId().withMessage("hotel phải là ID"),
+        body('discountType').notEmpty().withMessage("discountType không được để trống").bail().isIn(['percentage', 'fixed_amount']).withMessage("discountType phải là percentage hoặc fixed_amount"),
+        body('discountValue').notEmpty().withMessage("discountValue không được để trống").bail().isFloat({ min: 0 }).withMessage("discountValue phải >= 0").custom((value, { req }) => {
+            if (req.body.discountType === 'percentage' && value > 100) {
+                throw new Error("Phần trăm giảm giá không thể vượt quá 100%");
+            }
+            return true;
+        }),
+        body('startDate').notEmpty().withMessage("startDate không được để trống").bail().isISO8601().withMessage("startDate sai định dạng"),
+        body('endDate').notEmpty().withMessage("endDate không được để trống").bail().isISO8601().withMessage("endDate sai định dạng").custom((value, { req }) => {
+            if (new Date(value) <= new Date(req.body.startDate)) {
+                throw new Error("Ngày kết thúc phải sau ngày bắt đầu");
+            }
+            return true;
+        }),
     ],
     CreateReviewValidator: [
         body('hotel').notEmpty().withMessage("hotel khong duoc de trong").bail().isMongoId().withMessage("hotel phai la ID"),
