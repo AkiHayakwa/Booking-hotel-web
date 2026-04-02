@@ -27,6 +27,10 @@ import AdminPromotionsPage from './pages/AdminPromotionsPage';
 import AdminAmenitiesPage from './pages/AdminAmenitiesPage';
 import AdminBlogsPage from './pages/AdminBlogsPage';
 import AdminReviewsPage from './pages/AdminReviewsPage';
+import ProfilePage from './pages/ProfilePage';
+import MyBookingsPage from './pages/MyBookingsPage';
+import BookingDetailPage from './pages/BookingDetailPage';
+import SettingsPage from './pages/SettingsPage';
 import './index.css';
 
 import OwnerDashboardPage from './pages/OwnerDashboardPage';
@@ -97,6 +101,10 @@ function App() {
                   <Route path="/hotels/:id" element={<HotelDetails />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/:slug" element={<BlogDetailPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/my-bookings" element={<MyBookingsPage />} />
+                  <Route path="/my-bookings/:id" element={<BookingDetailPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/payment-result" element={<PaymentResultPage />} />
                 </Routes>
                 <Footer />

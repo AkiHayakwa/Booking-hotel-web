@@ -37,11 +37,17 @@ const authApi = {
   getMe: () => {
     return axiosClient.get('/auth/me');
   },
+  updateMe: (data) => {
+    return axiosClient.put('/auth/me', data);
+  },
   logout: () => {
     return axiosClient.post('/auth/logout');
   },
   changePassword: (oldpassword, newpassword) => {
     return axiosClient.post('/auth/changepassword', { oldpassword, newpassword });
+  },
+  deleteMe: () => {
+    return axiosClient.delete('/auth/me');
   },
 };
 
