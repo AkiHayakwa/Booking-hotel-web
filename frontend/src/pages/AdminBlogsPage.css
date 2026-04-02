@@ -1,81 +1,380 @@
+/* ============================================
+   ADMIN BLOGS PAGE STYLES
+   ============================================ */
+
 .admin-blogs {
-  padding: 1rem;
+  padding: 0;
+  font-family: var(--font);
 }
 
+/* ── Header ──────────────────────────── */
 .admin-blogs__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 
 .admin-blogs__title {
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--primary-color);
-  margin-bottom: 0.25rem;
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  margin-bottom: 0.2rem;
 }
 
 .admin-blogs__subtitle {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: #64748b;
+  font-weight: 400;
 }
 
 .admin-blogs__add-btn {
-  background: var(--primary-color);
+  background: var(--primary);
   color: white;
   border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: var(--radius-lg);
   font-weight: 700;
+  font-family: var(--font);
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
 }
 
 .admin-blogs__add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 31, 61, 0.2);
+  box-shadow: var(--shadow-md);
+  background: var(--primary-hover);
 }
 
-/* Blog Thumb */
+.admin-blogs__add-btn .material-symbols-outlined {
+  font-size: 1.15rem;
+}
+
+/* ── Stat Cards ──────────────────────── */
+.admin-blogs__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.admin-blogs__stat-card {
+  background: var(--white);
+  border: 1px solid rgba(0, 31, 61, 0.1);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.admin-blogs__stat-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.admin-blogs__stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-blogs__stat-icon .material-symbols-outlined {
+  font-size: 1.4rem;
+}
+
+.admin-blogs__stat-icon--total {
+  background: linear-gradient(135deg, rgba(0, 31, 61, 0.1), rgba(0, 31, 61, 0.04));
+  color: var(--primary);
+}
+
+.admin-blogs__stat-icon--published {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.04));
+  color: #16a34a;
+}
+
+.admin-blogs__stat-icon--draft {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.12), rgba(234, 179, 8, 0.04));
+  color: #ca8a04;
+}
+
+.admin-blogs__stat-icon--comments {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.04));
+  color: #2563eb;
+}
+
+.admin-blogs__stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-blogs__stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.admin-blogs__stat-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* ── Table Overrides ─────────────────── */
+.blog-thumb {
+  width: 90px;
+  height: 56px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(0, 31, 61, 0.08);
+  flex-shrink: 0;
+}
+
 .blog-thumb img {
-  width: 80px;
-  height: 50px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 4px;
+}
+
+.blog-thumb--placeholder {
+  background: linear-gradient(135deg, rgba(0, 31, 61, 0.06), rgba(212, 175, 55, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blog-thumb--placeholder .material-symbols-outlined {
+  font-size: 1.5rem;
+  color: #94a3b8;
+}
+
+.blog-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .blog-info .blog-name {
   font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 2px;
+  color: var(--primary);
+  font-size: 0.9rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .blog-info .blog-author {
   font-size: 0.75rem;
-  color: #64748b;
+  color: #94a3b8;
+  font-weight: 500;
 }
 
 .blog-category {
-  font-size: 0.75rem;
-  background: #f1f5f9;
-  padding: 2px 8px;
-  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(0, 31, 61, 0.06);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
   color: #475569;
-  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.blog-date {
+  font-size: 0.85rem;
+  color: #64748b;
+  white-space: nowrap;
 }
 
 .publish-toggle {
   cursor: pointer;
+  display: inline-block;
 }
 
-/* Large Modal */
+/* Badge adjustments for blog */
+.admin-badge--active {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.admin-badge--pending {
+  background: #fefce8;
+  color: #a16207;
+}
+
+.admin-badge--pointer {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.admin-badge--pointer:hover {
+  transform: scale(1.05);
+}
+
+/* Action buttons in table */
+.admin-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.admin-table-btn {
+  padding: 0.375rem;
+  border-radius: var(--radius);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+}
+
+.admin-table-btn .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
+.admin-table-btn:hover {
+  color: var(--accent);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.admin-table-btn--danger:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Comment count button */
+.blog-comment-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.blog-comment-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.blog-comment-btn .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+/* ── Large Modal ─────────────────────── */
 .admin-modal--large {
   max-width: 900px !important;
   width: 95% !important;
+}
+
+.admin-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 31, 61, 0.08);
+}
+
+.admin-modal__header h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--primary);
+  font-family: var(--font);
+}
+
+.admin-modal__close {
+  background: rgba(0, 31, 61, 0.05);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.admin-modal__close:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.admin-modal__form .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.admin-modal__form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-modal__form .form-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font);
+}
+
+.admin-modal__form .form-group input:not([type="checkbox"]),
+.admin-modal__form .form-group select,
+.admin-modal__form .form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid rgba(0, 31, 61, 0.12);
+  border-radius: var(--radius-lg);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  background: #f8fafc;
+  transition: var(--transition);
+}
+
+.admin-modal__form .form-group input:not([type="checkbox"]):focus,
+.admin-modal__form .form-group select:focus,
+.admin-modal__form .form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(212, 175, 54, 0.1);
+}
+
+.admin-modal__form .form-group textarea {
+  resize: vertical;
+  min-height: 160px;
+  line-height: 1.6;
 }
 
 .full-width {
@@ -83,7 +382,7 @@
 }
 
 .form-group.checkbox {
-  display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.5rem;
 }
@@ -94,14 +393,66 @@
   gap: 0.5rem;
   margin-bottom: 0;
   cursor: pointer;
+  text-transform: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
 }
 
 .form-group.checkbox input {
   width: 18px;
   height: 18px;
+  accent-color: var(--accent);
 }
 
-/* Comments Modal Styles */
+.admin-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 31, 61, 0.08);
+}
+
+.btn-ghost {
+  padding: 0.625rem 1.25rem;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-ghost:hover {
+  background: #e2e8f0;
+  color: var(--primary);
+}
+
+.btn-primary {
+  padding: 0.625rem 1.25rem;
+  background: var(--accent);
+  color: var(--primary);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Comments Modal ──────────────────── */
 .admin-modal--comments {
   max-width: 600px !important;
   width: 95% !important;
@@ -116,26 +467,26 @@
   overflow-y: auto;
   padding: 1rem;
   background-color: #f8fafc;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   max-height: 500px;
 }
 
 .admin-comment-item {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   padding: 1rem;
-  background-color: white;
-  border-radius: 8px;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
   margin-bottom: 0.75rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 31, 61, 0.06);
   position: relative;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .admin-comment-item:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+  border-color: rgba(0, 31, 61, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .admin-comment-avatar img {
@@ -143,10 +494,12 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(212, 175, 55, 0.2);
 }
 
 .admin-comment-content {
   flex: 1;
+  min-width: 0;
 }
 
 .admin-comment-header {
@@ -157,37 +510,42 @@
 
 .admin-comment-author {
   font-weight: 700;
-  color: var(--primary-color);
-  font-size: 0.9rem;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-family: var(--font);
 }
 
 .admin-comment-date {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #94a3b8;
+  font-family: var(--font);
 }
 
 .admin-comment-text {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #334155;
-  line-height: 1.5;
+  line-height: 1.55;
   margin-top: 0.25rem;
+  font-family: var(--font);
 }
 
 .admin-comment-delete-btn {
   background: none;
   border: none;
-  color: #ef4444;
+  color: #cbd5e1;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: background 0.2s;
+  padding: 0.375rem;
+  border-radius: var(--radius);
+  transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .admin-comment-delete-btn:hover {
   background-color: #fef2f2;
+  color: #ef4444;
 }
 
 .admin-comments-empty {
@@ -197,10 +555,32 @@
   justify-content: center;
   padding: 3rem 1rem;
   color: #94a3b8;
+  font-family: var(--font);
 }
 
 .admin-comments-empty .material-symbols-outlined {
   font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
+  margin-bottom: 0.75rem;
+  opacity: 0.4;
+}
+
+.admin-comments-empty p {
+  font-size: 0.9rem;
+}
+
+/* ── Responsive ──────────────────────── */
+@media (max-width: 768px) {
+  .admin-blogs__header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .admin-blogs__stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .admin-modal__form .form-grid {
+    grid-template-columns: 1fr;
+  }
 }
