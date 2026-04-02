@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import promotionApi from '../api/promotionApi';
 import hotelApi from '../api/hotelApi';
+import uploadApi from '../api/uploadApi';
 import './AdminPromotionsPage.css';
 
 export default function AdminPromotionsPage() {
   const [promotions, setPromotions] = useState([]);
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -99,6 +101,21 @@ export default function AdminPromotionsPage() {
       } catch (error) {
         alert("Lỗi khi xóa ưu đãi");
       }
+    }
+  };
+
+  const handleThumbnailUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const res = await uploadApi.uploadImage(file);
+      setFormData(prev => ({ ...prev, thumbnail: res.data.url }));
+    } catch (err) {
+      alert("Lỗi tải ảnh lên.");
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
     }
   };
 
@@ -264,12 +281,37 @@ export default function AdminPromotionsPage() {
                   />
                 </div>
                 <div className="form-group full-width">
-                  <label>Link ảnh thumbnail</label>
-                  <input 
-                    type="text" 
-                    value={formData.thumbnail} 
-                    onChange={e => setFormData({...formData, thumbnail: e.target.value})} 
-                  />
+                  <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span>Ảnh Thumbnail</span>
+                    <label className="btn-primary" style={{ padding: '4px 12px', fontSize: '0.85rem', cursor: 'pointer', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>{uploadingImage ? 'sync' : 'add_photo_alternate'}</span>
+                      {uploadingImage ? 'Đang tải...' : 'Upload ảnh'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleThumbnailUpload} 
+                        style={{ display: 'none' }} 
+                        disabled={uploadingImage}
+                      />
+                    </label>
+                  </label>
+                  {formData.thumbnail ? (
+                    <div style={{ position: 'relative', width: '150px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', marginTop: '5px' }}>
+                      <img src={formData.thumbnail} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button 
+                        type="button" 
+                        onClick={() => setFormData(prev => ({...prev, thumbnail: ''}))}
+                        style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(239,68,68,0.9)', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '20px', border: '1px dashed #cbd5e1', borderRadius: '8px', textAlign: 'center', color: '#64748b', marginTop: '5px' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '2rem', marginBottom: '8px', opacity: 0.5 }}>image</span>
+                      <p style={{ margin: 0, fontSize: '0.9rem' }}>Chưa có thumbnail.</p>
+                    </div>
+                  )}
                 </div>
                 <div className="form-group full-width">
                   <label>Mô tả chi tiết</label>

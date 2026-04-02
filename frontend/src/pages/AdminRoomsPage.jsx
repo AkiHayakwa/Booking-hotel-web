@@ -3,6 +3,7 @@ import AdminLayout from '../components/AdminLayout';
 import hotelApi from '../api/hotelApi';
 import roomTypeApi from '../api/roomTypeApi';
 import roomApi from '../api/roomApi';
+import uploadApi from '../api/uploadApi';
 import './AdminRoomsPage.css';
 
 export default function AdminRoomsPage() {
@@ -19,10 +20,37 @@ export default function AdminRoomsPage() {
   const [showTypeModal, setShowTypeModal] = useState(false);
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   // Forms state
-  const [typeForm, setTypeForm] = useState({ name: '', pricePerNight: '', maxGuests: 2, description: '', imageUrl: '' });
+  const [typeForm, setTypeForm] = useState({ name: '', pricePerNight: '', maxGuests: 2, description: '', images: [] });
   const [roomForm, setRoomForm] = useState({ roomNumber: '', roomType: '', floor: 1 });
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setUploadingImages(true);
+    
+    try {
+      const uploadPromises = files.map(file => uploadApi.uploadImage(file));
+      const results = await Promise.all(uploadPromises);
+      
+      const newUrls = results.map(res => res.data?.url).filter(Boolean);
+      setTypeForm(f => ({ ...f, images: [...(f.images || []), ...newUrls] }));
+    } catch (err) {
+      alert("Có lỗi xảy ra khi tải ảnh lên.");
+    } finally {
+      setUploadingImages(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeImage = (indexToRemove) => {
+    setTypeForm(f => ({
+      ...f,
+      images: f.images.filter((_, idx) => idx !== indexToRemove)
+    }));
+  };
 
   // 1. Lấy danh sách Hotel
   useEffect(() => {
@@ -65,7 +93,7 @@ export default function AdminRoomsPage() {
 
   // Handlers cho Loại Phòng
   const openAddTypeModal = () => {
-    setTypeForm({ name: '', pricePerNight: '', maxGuests: 2, description: '', imageUrl: '' });
+    setTypeForm({ name: '', pricePerNight: '', maxGuests: 2, description: '', images: [] });
     setShowTypeModal(true);
   };
 
@@ -76,7 +104,7 @@ export default function AdminRoomsPage() {
     setSubmitLoading(true);
     const payload = {
       ...typeForm,
-      images: typeForm.imageUrl ? [typeForm.imageUrl] : [],
+      images: typeForm.images,
       hotel: selectedHotel
     };
 
@@ -341,13 +369,46 @@ export default function AdminRoomsPage() {
                 </div>
               </div>
 
+              {/* Ảnh Room Type */}
               <div className="admin-form-group">
-                <label className="admin-form-label">Image URL</label>
-                <input 
-                  type="url" className="admin-form-input" 
-                  placeholder="https://..."
-                  value={typeForm.imageUrl} onChange={e => setTypeForm({...typeForm, imageUrl: e.target.value})}
-                />
+                <label className="admin-form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Hình ảnh hạng phòng</span>
+                  <label className="btn-primary" style={{ padding: '4px 12px', fontSize: '0.85rem', cursor: 'pointer', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>{uploadingImages ? 'sync' : 'add_photo_alternate'}</span>
+                    {uploadingImages ? 'Đang tải...' : 'Upload ảnh'}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple
+                      onChange={handleImageUpload} 
+                      style={{ display: 'none' }} 
+                      disabled={uploadingImages}
+                    />
+                  </label>
+                </label>
+                
+                {typeForm.images && typeForm.images.length > 0 ? (
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+                    {typeForm.images.map((url, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                        <img src={url} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button 
+                          type="button" 
+                          onClick={() => removeImage(idx)}
+                          style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(239,68,68,0.9)', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                          title="Xóa ảnh này"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ marginTop: '10px', padding: '20px', border: '1px dashed #cbd5e1', borderRadius: '8px', textAlign: 'center', color: '#64748b' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '2rem', marginBottom: '8px', opacity: 0.5 }}>image</span>
+                    <p style={{ margin: 0, fontSize: '0.9rem' }}>Chưa có hình ảnh nào.</p>
+                  </div>
+                )}
               </div>
 
               <div className="admin-form-group">

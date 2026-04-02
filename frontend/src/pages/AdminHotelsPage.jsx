@@ -4,6 +4,7 @@ import hotelApi from '../api/hotelApi';
 import statsApi from '../api/statsApi';
 import userApi from '../api/userApi';
 import { useAuth } from '../context/AuthContext';
+import uploadApi from '../api/uploadApi';
 import './AdminHotelsPage.css';
 
 const TABS = ['All Hotels', 'Active', 'Pending', 'Maintenance'];
@@ -23,11 +24,38 @@ export default function AdminHotelsPage() {
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [formData, setFormData] = useState({
     _id: '', name: '', description: '', address: '', 
-    city: 'Da Nang', phone: '', email: '', imageUrl: '',
+    city: 'Da Nang', phone: '', email: '', images: [],
     owner: ''
   });
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setUploadingImages(true);
+    
+    try {
+      const uploadPromises = files.map(file => uploadApi.uploadImage(file));
+      const results = await Promise.all(uploadPromises);
+      
+      const newUrls = results.map(res => res.data?.url).filter(Boolean);
+      setFormData(prev => ({ ...prev, images: [...(prev.images || []), ...newUrls] }));
+    } catch (err) {
+      alert("Có lỗi xảy ra khi tải ảnh lên.");
+    } finally {
+      setUploadingImages(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeImage = (indexToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, idx) => idx !== indexToRemove)
+    }));
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -111,7 +139,7 @@ export default function AdminHotelsPage() {
     setIsEdit(false);
     setFormData({ 
       _id: '', name: '', description: '', address: '', 
-      city: 'Da Nang', phone: '', email: '', imageUrl: '',
+      city: 'Da Nang', phone: '', email: '', images: [],
       owner: '' 
     });
     setShowModal(true);
@@ -127,7 +155,7 @@ export default function AdminHotelsPage() {
       city: hotel.city || 'Da Nang',
       phone: hotel.phone || '',
       email: hotel.email || '',
-      imageUrl: hotel.images?.[0] || '',
+      images: hotel.images ? [...hotel.images] : [],
       owner: hotel.owner?._id || hotel.owner || ''
     });
     setShowModal(true);
@@ -148,7 +176,7 @@ export default function AdminHotelsPage() {
       city: formData.city,
       phone: formData.phone,
       email: formData.email,
-      images: formData.imageUrl ? [formData.imageUrl] : [],
+      images: formData.images,
       owner: formData.owner
     };
 
@@ -411,12 +439,44 @@ export default function AdminHotelsPage() {
               </div>
 
               <div className="admin-form-group">
-                <label className="admin-form-label">Image URL</label>
-                <input 
-                  type="url" name="imageUrl" className="admin-form-input" 
-                  value={formData.imageUrl} onChange={handleChange} 
-                  placeholder="https://images.unsplash.com/photo-..."
-                />
+                <label className="admin-form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Hotel Images</span>
+                  <label className="btn-primary" style={{ padding: '4px 12px', fontSize: '0.85rem', cursor: 'pointer', margin: 0, display: 'flex', alignItems: 'center', gap: '4px', background: '#0284c7', color: '#fff', borderRadius: '4px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>{uploadingImages ? 'sync' : 'add_photo_alternate'}</span>
+                    {uploadingImages ? 'Uploading...' : 'Upload Images'}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple
+                      onChange={handleImageUpload} 
+                      style={{ display: 'none' }} 
+                      disabled={uploadingImages}
+                    />
+                  </label>
+                </label>
+                
+                {formData.images && formData.images.length > 0 ? (
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+                    {formData.images.map((url, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                        <img src={url} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button 
+                          type="button" 
+                          onClick={() => removeImage(idx)}
+                          style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(239,68,68,0.9)', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                          title="Remove this image"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ marginTop: '10px', padding: '20px', border: '1px dashed #cbd5e1', borderRadius: '8px', textAlign: 'center', color: '#64748b' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '2rem', marginBottom: '8px', opacity: 0.5 }}>image</span>
+                    <p style={{ margin: 0, fontSize: '0.9rem' }}>No images uploaded yet.</p>
+                  </div>
+                )}
               </div>
 
               <div className="admin-form-group">
