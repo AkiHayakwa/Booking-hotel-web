@@ -14,8 +14,8 @@ router.get('/admin/all', CheckLogin, checkRole('admin'), async function (req, re
     res.send(result)
 })
 router.post('/', CheckLogin, checkRole('admin'), CreateBlogValidator, validatedResult, async function (req, res, next) {
-    let { title, content, thumbnail, category, tags } = req.body;
-    let result = await blogController.CreateBlog(title, content, thumbnail, category, req.user._id, tags);
+    let { title, content, thumbnail, category, tags, isPublished } = req.body;
+    let result = await blogController.CreateBlog(title, content, thumbnail, category, req.user._id, tags, isPublished);
     res.send(result)
 })
 router.get('/:slug', async function (req, res, next) {

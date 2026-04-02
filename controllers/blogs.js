@@ -29,20 +29,27 @@ module.exports = {
             return false;
         }
     },
-    CreateBlog: async function (title, content, thumbnail, category, authorId, tags) {
+    CreateBlog: async function (title, content, thumbnail, category, authorId, tags, isPublished) {
         let newItem = new blogModel({
             title: title,
             content: content,
             thumbnail: thumbnail || "",
             category: category || "news",
             author: authorId,
-            tags: tags || []
+            tags: tags || [],
+            isPublished: isPublished || false,
+            publishedAt: isPublished ? new Date() : null
         });
         await newItem.save();
         return newItem;
     },
     UpdateBlog: async function (id, body) {
         try {
+            if (body.isPublished === true) {
+                body.publishedAt = body.publishedAt || new Date();
+            } else if (body.isPublished === false) {
+                body.publishedAt = null;
+            }
             return await blogModel.findOneAndUpdate(
                 { _id: id, isDeleted: false },
                 body,

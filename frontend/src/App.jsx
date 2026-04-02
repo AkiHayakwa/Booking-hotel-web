@@ -14,6 +14,7 @@ import PromotionsPage from './pages/PromotionsPage';
 import HotelsPage from './pages/HotelsPage';
 import HotelDetails from './pages/HotelDetails';
 import BlogPage from './pages/BlogPage';
+import BlogDetailPage from './pages/BlogDetailPage';
 import PaymentResultPage from './pages/PaymentResultPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
@@ -95,6 +96,7 @@ function App() {
                   <Route path="/hotels" element={<HotelsPage />} />
                   <Route path="/hotels/:id" element={<HotelDetails />} />
                   <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/:slug" element={<BlogDetailPage />} />
                   <Route path="/payment-result" element={<PaymentResultPage />} />
                 </Routes>
                 <Footer />

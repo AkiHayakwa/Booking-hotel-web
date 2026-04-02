@@ -161,6 +161,46 @@ export default function AdminBlogsPage() {
           </button>
         </div>
 
+        {/* Stat Cards */}
+        <div className="admin-blogs__stats">
+          <div className="admin-blogs__stat-card">
+            <div className="admin-blogs__stat-icon admin-blogs__stat-icon--total">
+              <span className="material-symbols-outlined">article</span>
+            </div>
+            <div className="admin-blogs__stat-info">
+              <span className="admin-blogs__stat-value">{blogs.length}</span>
+              <span className="admin-blogs__stat-label">Tổng bài viết</span>
+            </div>
+          </div>
+          <div className="admin-blogs__stat-card">
+            <div className="admin-blogs__stat-icon admin-blogs__stat-icon--published">
+              <span className="material-symbols-outlined">check_circle</span>
+            </div>
+            <div className="admin-blogs__stat-info">
+              <span className="admin-blogs__stat-value">{blogs.filter(b => b.isPublished).length}</span>
+              <span className="admin-blogs__stat-label">Đã xuất bản</span>
+            </div>
+          </div>
+          <div className="admin-blogs__stat-card">
+            <div className="admin-blogs__stat-icon admin-blogs__stat-icon--draft">
+              <span className="material-symbols-outlined">edit_note</span>
+            </div>
+            <div className="admin-blogs__stat-info">
+              <span className="admin-blogs__stat-value">{blogs.filter(b => !b.isPublished).length}</span>
+              <span className="admin-blogs__stat-label">Bản nháp</span>
+            </div>
+          </div>
+          <div className="admin-blogs__stat-card">
+            <div className="admin-blogs__stat-icon admin-blogs__stat-icon--comments">
+              <span className="material-symbols-outlined">forum</span>
+            </div>
+            <div className="admin-blogs__stat-info">
+              <span className="admin-blogs__stat-value">{blogs.reduce((sum, b) => sum + (b.commentCount || 0), 0)}</span>
+              <span className="admin-blogs__stat-label">Tổng bình luận</span>
+            </div>
+          </div>
+        </div>
+
         <div className="admin-table-card">
           <div className="admin-table-wrap">
             <table className="admin-table">
@@ -170,20 +210,29 @@ export default function AdminBlogsPage() {
                   <th>Tiêu đề / Tác giả</th>
                   <th>Danh mục</th>
                   <th>Ngày tạo</th>
-                  <th>Lượt bình luận</th>
+                  <th>Bình luận</th>
                   <th>Trạng thái</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="7" className="text-center py-8">Đang tải dữ liệu...</td></tr>
+                  <tr><td colSpan="7" style={{ textAlign: 'center', padding: '3rem' }}>
+                    <span className="material-symbols-outlined" style={{ animation: 'spin 1s linear infinite', fontSize: '2rem', color: '#94a3b8', display: 'block', marginBottom: '0.5rem' }}>progress_activity</span>
+                    Đang tải dữ liệu...
+                  </td></tr>
                 ) : blogs.length > 0 ? (
                   blogs.map((b) => (
                     <tr key={b._id}>
                       <td>
                         <div className="blog-thumb">
-                          <img src={b.thumbnail || 'https://via.placeholder.com/100x60?text=No+Thumb'} alt={b.title} />
+                          {b.thumbnail ? (
+                            <img src={b.thumbnail} alt={b.title} />
+                          ) : (
+                            <div className="blog-thumb blog-thumb--placeholder">
+                              <span className="material-symbols-outlined">image</span>
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td>
@@ -197,16 +246,17 @@ export default function AdminBlogsPage() {
                           {CATEGORIES.find(c => c.value === b.category)?.label || b.category}
                         </span>
                       </td>
-                      <td>{new Date(b.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        <span className="blog-date">{new Date(b.createdAt).toLocaleDateString('vi-VN')}</span>
+                      </td>
                       <td>
                         <button 
-                          className="admin-badge admin-badge--pointer" 
-                          style={{ backgroundColor: '#e0f2fe', color: '#0284c7', border: 'none', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                          className="blog-comment-btn"
                           onClick={() => handleOpenCommentModal(b)}
                           title="Xem & Quản lý bình luận"
                         >
-                          <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>chat</span>
-                          <span style={{ fontWeight: '800' }}>{b.commentCount || 0}</span>
+                          <span className="material-symbols-outlined">chat</span>
+                          {b.commentCount || 0}
                         </button>
                       </td>
                       <td>
