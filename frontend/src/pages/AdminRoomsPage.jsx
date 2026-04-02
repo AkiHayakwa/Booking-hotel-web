@@ -18,6 +18,7 @@ export default function AdminRoomsPage() {
 
   // Modals state
   const [showTypeModal, setShowTypeModal] = useState(false);
+  const [editingType, setEditingType] = useState(null);
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -94,23 +95,41 @@ export default function AdminRoomsPage() {
   // Handlers cho Loại Phòng
   const openAddTypeModal = () => {
     setTypeForm({ name: '', pricePerNight: '', maxGuests: 2, description: '', images: [] });
+    setEditingType(null);
+    setShowTypeModal(true);
+  };
+
+  const openEditTypeModal = (rt) => {
+    setTypeForm({
+      name: rt.name,
+      pricePerNight: rt.pricePerNight,
+      maxGuests: rt.maxGuests || rt.capacity || 2,
+      description: rt.description || '',
+      images: rt.images || []
+    });
+    setEditingType(rt);
     setShowTypeModal(true);
   };
 
   const handleSaveType = async (e) => {
     e.preventDefault();
     if(!selectedHotel) return alert("Vui lòng chọn khách sạn trước!");
+    if(Number(typeForm.pricePerNight) < 1000) return alert("Giá phòng không thể dưới 1,000 VNĐ!");
     
     setSubmitLoading(true);
     const payload = {
       ...typeForm,
-      images: typeForm.images,
       hotel: selectedHotel
     };
 
     try {
-      await roomTypeApi.create(selectedHotel, payload);
-      alert('Tạo loại phòng thành công!');
+      if (editingType) {
+        await roomTypeApi.update(editingType._id, payload);
+        alert('Cập nhật loại phòng thành công!');
+      } else {
+        await roomTypeApi.create(selectedHotel, payload);
+        alert('Tạo loại phòng thành công!');
+      }
       setShowTypeModal(false);
       fetchHotelData(selectedHotel);
     } catch (error) {
@@ -265,6 +284,9 @@ export default function AdminRoomsPage() {
                               <td className="font-bold text-primary">{parseInt(rt.pricePerNight).toLocaleString()} VNĐ</td>
                               <td>
                                 <div className="admin-action-group" style={{justifyContent:'flex-end'}}>
+                                  <button className="admin-action-btn admin-action-btn--edit" onClick={() => openEditTypeModal(rt)}>
+                                    <span className="material-symbols-outlined">edit</span>
+                                  </button>
                                   <button className="admin-action-btn admin-action-btn--delete" onClick={() => handleDeleteType(rt._id)}>
                                     <span className="material-symbols-outlined">delete</span>
                                   </button>
@@ -338,8 +360,8 @@ export default function AdminRoomsPage() {
               <span className="material-symbols-outlined">close</span>
             </button>
             <div className="admin-modal-header">
-              <h3 className="admin-modal-title">Tạo Loại Phòng (Room Type)</h3>
-              <p className="admin-modal-sub">Định nghĩa bảng giá và sức chứa cho hạng phòng.</p>
+              <h3 className="admin-modal-title">{editingType ? 'Chỉnh sửa Loại Phòng' : 'Tạo Loại Phòng (Room Type)'}</h3>
+              <p className="admin-modal-sub">{editingType ? 'Cập nhật định nghĩa hạng phòng' : 'Định nghĩa bảng giá và sức chứa cho hạng phòng.'}</p>
             </div>
             
             <form onSubmit={handleSaveType}>
@@ -356,7 +378,7 @@ export default function AdminRoomsPage() {
                 <div className="admin-form-group">
                   <label className="admin-form-label">Giá mỗi đêm (VNĐ) *</label>
                   <input 
-                    type="number" min="0" className="admin-form-input" required 
+                    type="number" min="1000" className="admin-form-input" required 
                     value={typeForm.pricePerNight} onChange={e => setTypeForm({...typeForm, pricePerNight: e.target.value})}
                   />
                 </div>
@@ -422,7 +444,7 @@ export default function AdminRoomsPage() {
               <div className="admin-modal-actions">
                 <button type="button" className="admin-btn-cancel" onClick={() => setShowTypeModal(false)}>Hủy</button>
                 <button type="submit" className="admin-btn-submit" disabled={submitLoading}>
-                  {submitLoading ? 'Đang lưu...' : 'Lưu Hạng Phòng'}
+                  {submitLoading ? 'Đang lưu...' : editingType ? 'Lưu Thay Đổi' : 'Lưu Hạng Phòng'}
                 </button>
               </div>
             </form>
