@@ -1,0 +1,222 @@
+/* ═══ Owner Promotions Page ═══ */
+
+/* ── Table ── */
+.opp-table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  overflow-x: auto;
+}
+
+.opp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.opp-table thead {
+  background: #f8fafc;
+}
+
+.opp-table th {
+  text-align: left;
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.opp-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.opp-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.opp-cell-title {
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.opp-cell-desc {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Promo Code Chip ── */
+.opp-code {
+  display: inline-block;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Status Badges ── */
+.opp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.opp-badge--active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.opp-badge--expired {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.opp-badge--upcoming {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.opp-badge--off {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+/* ── Action Buttons ── */
+.opp-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.opp-action-btn {
+  background: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 6px;
+  color: #64748b;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.opp-action-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.opp-action-btn--del:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.opp-action-btn .material-symbols-outlined {
+  font-size: 1.15rem;
+}
+
+/* ── Room Type Chips (Modal) ── */
+.opp-rt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.opp-rt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.opp-rt-chip:hover {
+  border-color: #0891b2;
+  color: #0891b2;
+}
+
+.opp-rt-chip--active {
+  background: #ecfeff;
+  border-color: #0891b2;
+  color: #0891b2;
+  font-weight: 600;
+}
+
+/* ── Toggle Switch ── */
+.opp-toggle-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.opp-toggle {
+  position: relative;
+  display: inline-flex;
+  width: 44px;
+  height: 24px;
+}
+
+.opp-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.opp-toggle__slider {
+  position: absolute;
+  inset: 0;
+  background-color: #cbd5e1;
+  border-radius: 24px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.opp-toggle__slider::before {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+
+.opp-toggle input:checked + .opp-toggle__slider {
+  background-color: #0891b2;
+}
+
+.opp-toggle input:checked + .opp-toggle__slider::before {
+  transform: translateX(20px);
+}

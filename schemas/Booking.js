@@ -11,11 +11,11 @@ const bookingSchema = new mongoose.Schema(
       ref: "hotel",
       required: true
     },
-    room: {
+    rooms: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "room",
       required: true
-    },
+    }],
     checkInDate: {
       type: Date,
       required: [true, "Check-in date is required"]

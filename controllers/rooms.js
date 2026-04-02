@@ -67,7 +67,7 @@ module.exports = {
                 checkInDate: { $lt: new Date(checkOut) },
                 checkOutDate: { $gt: new Date(checkIn) }
             })
-            let bookedRoomIds = overlappingBookings.map(b => b.room)
+            let bookedRoomIds = overlappingBookings.flatMap(b => b.rooms || [])
 
             let query = {
                 _id: { $nin: bookedRoomIds },
