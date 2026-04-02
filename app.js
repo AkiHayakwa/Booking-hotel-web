@@ -36,6 +36,7 @@ app.use('/api/v1/amenities', require('./routes/amenities'));
 app.use('/api/v1/promotions', require('./routes/promotions'));
 app.use('/api/v1/blogs', require('./routes/blogs'));
 app.use('/api/v1/stats', require('./routes/stats'));
+app.use('/api/v1/upload', require('./routes/upload'));
 
 let roleModel = require('./schemas/Role')
 let userModel = require('./schemas/User')

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import blogApi from '../api/blogApi';
+import uploadApi from '../api/uploadApi';
 import './AdminBlogsPage.css';
 
 const CATEGORIES = [
@@ -31,6 +32,67 @@ export default function AdminBlogsPage() {
   const [commentsList, setCommentsList] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
 
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [uploadingContentImg, setUploadingContentImg] = useState(false);
+
+  const contentRef = useRef(null);
+
+  const handleThumbnailUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingThumbnail(true);
+    try {
+      const res = await uploadApi.uploadImage(file);
+      if (res.data && res.data.url) {
+        setFormData(prev => ({ ...prev, thumbnail: res.data.url }));
+      }
+    } catch (err) {
+      alert("Lỗi khi tải ảnh bìa lên. (Nhớ thử khởi động lại Backend nhé!)");
+    } finally {
+      setUploadingThumbnail(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleContentImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingContentImg(true);
+    try {
+      const res = await uploadApi.uploadImage(file);
+      if (res.data && res.data.url) {
+        const imageMarkdown = `![Ảnh minh họa](${res.data.url})`;
+        
+        const textarea = contentRef.current;
+        if (textarea) {
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const currentContent = formData.content;
+          
+          // Chèn ảnh vào ngay vị trí con trỏ (selectionStart)
+          const piece1 = currentContent.substring(0, start);
+          const piece2 = currentContent.substring(end);
+          const newContent = `${piece1}\n\n${imageMarkdown}\n\n${piece2}`;
+          
+          setFormData(prev => ({ ...prev, content: newContent }));
+          
+          // Đặt lại vị trí con trỏ sau hình ảnh
+          setTimeout(() => {
+            textarea.focus();
+            const newPos = start + imageMarkdown.length + 4; // +4 cho kí tự \n
+            textarea.setSelectionRange(newPos, newPos);
+          }, 0);
+        } else {
+          setFormData(prev => ({ ...prev, content: prev.content + `\n\n${imageMarkdown}\n\n` }));
+        }
+      }
+    } catch (err) {
+      alert("Lỗi khi tải ảnh lên. (Nhớ thử khởi động lại Backend nhé!)");
+    } finally {
+      setUploadingContentImg(false);
+      e.target.value = '';
+    }
+  };
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -327,21 +389,50 @@ export default function AdminBlogsPage() {
                   />
                 </div>
                 <div className="form-group full-width">
-                  <label>Link ảnh bìa (Thumbnail URL)</label>
-                  <input 
-                    type="text" 
-                    value={formData.thumbnail} 
-                    onChange={e => setFormData({...formData, thumbnail: e.target.value})} 
-                  />
+                  <label>Ảnh bìa (Thumbnail)</label>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <input 
+                      type="text" 
+                      placeholder="URL hoặc upload file bên cạnh..."
+                      value={formData.thumbnail} 
+                      onChange={e => setFormData({...formData, thumbnail: e.target.value})} 
+                      style={{ flex: 1 }}
+                    />
+                    <label className="btn-primary" style={{ cursor: 'pointer', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span className="material-symbols-outlined">{uploadingThumbnail ? 'sync' : 'upload_file'}</span>
+                      {uploadingThumbnail ? 'Đang tải...' : 'Upload'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleThumbnailUpload} 
+                        style={{ display: 'none' }} 
+                        disabled={uploadingThumbnail}
+                      />
+                    </label>
+                  </div>
                 </div>
                 <div className="form-group full-width">
-                  <label>Nội dung bài viết *</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ marginBottom: 0 }}>Nội dung bài viết *</label>
+                    <label className="admin-blogs__add-btn" style={{ padding: '4px 12px', fontSize: '0.85rem', cursor: 'pointer', margin: 0 }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>{uploadingContentImg ? 'sync' : 'add_photo_alternate'}</span>
+                      {uploadingContentImg ? 'Đang upload...' : 'Chèn ảnh vào nội dung'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleContentImageUpload} 
+                        style={{ display: 'none' }} 
+                        disabled={uploadingContentImg}
+                      />
+                    </label>
+                  </div>
                   <textarea 
+                    ref={contentRef}
                     rows="10" 
                     required
                     value={formData.content} 
                     onChange={e => setFormData({...formData, content: e.target.value})}
-                    placeholder="Viết nội dung bài viết ở đây..."
+                    placeholder="Viết nội dung bài viết ở đây... Bạn có thể nhập text thông thường. Bấm nút chèn ảnh để chen file lên."
                   ></textarea>
                 </div>
                 <div className="form-group checkbox">

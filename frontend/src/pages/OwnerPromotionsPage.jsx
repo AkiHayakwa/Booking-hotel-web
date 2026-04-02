@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import OwnerLayout from '../components/OwnerLayout';
 import { useOwner } from '../context/OwnerContext';
 import ownerApi from '../api/ownerApi';
+import uploadApi from '../api/uploadApi';
 import './OwnerPromotionsPage.css';
 
 /* ─── helpers ─────────────────────────────────── */
@@ -44,7 +45,7 @@ function ConfirmDialog({ title, onConfirm, onCancel, loading }) {
 
 /* ─── Modal Form Tạo / Sửa ưu đãi ──────────── */
 const BLANK = {
-  title: '', description: '', promoCode: '',
+  title: '', description: '', promoCode: '', thumbnail: '',
   discountType: 'percentage', discountValue: '',
   startDate: '', endDate: '',
   minNights: 1, maxUsage: '',
@@ -64,6 +65,7 @@ function PromoModal({ editTarget, onClose, onSaved, hotelId }) {
       ? {
           title: editTarget.title || '',
           description: editTarget.description || '',
+          thumbnail: editTarget.thumbnail || '',
           promoCode: editTarget.promoCode || '',
           discountType: editTarget.discountType || 'percentage',
           discountValue: editTarget.discountValue || '',
@@ -79,6 +81,7 @@ function PromoModal({ editTarget, onClose, onSaved, hotelId }) {
   const [roomTypes, setRoomTypes] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     if (!hotelId) return;
@@ -88,6 +91,21 @@ function PromoModal({ editTarget, onClose, onSaved, hotelId }) {
   }, [hotelId]);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleThumbnailUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const res = await uploadApi.uploadImage(file);
+      setForm(f => ({ ...f, thumbnail: res.data.url }));
+    } catch (err) {
+      setError("Lỗi tải ảnh lên.");
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
+    }
+  };
 
   const toggleRoomType = (rtId) => {
     setForm(f => {
@@ -103,6 +121,7 @@ function PromoModal({ editTarget, onClose, onSaved, hotelId }) {
     const payload = {
       title: form.title.trim(),
       description: form.description.trim(),
+      thumbnail: form.thumbnail,
       promoCode: form.promoCode.trim() || undefined,
       hotel: hotelId,
       discountType: form.discountType,
@@ -169,6 +188,41 @@ function PromoModal({ editTarget, onClose, onSaved, hotelId }) {
                 value={form.promoCode} onChange={e => set('promoCode', e.target.value.toUpperCase())}
                 placeholder="VD: SUMMER20" />
             </div>
+          </div>
+
+          {/* Ảnh Thumbnail */}
+          <div className="admin-form-group">
+            <label className="admin-form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Ảnh Thumbnail</span>
+              <label className="btn-primary" style={{ padding: '4px 12px', fontSize: '0.85rem', cursor: 'pointer', margin: 0, display: 'flex', alignItems: 'center', gap: '4px', background: '#0284c7', color: '#fff', borderRadius: '4px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>{uploadingImage ? 'sync' : 'add_photo_alternate'}</span>
+                {uploadingImage ? 'Đang tải...' : 'Upload ảnh'}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleThumbnailUpload} 
+                  style={{ display: 'none' }} 
+                  disabled={uploadingImage}
+                />
+              </label>
+            </label>
+            {form.thumbnail ? (
+              <div style={{ position: 'relative', width: '150px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', marginTop: '10px' }}>
+                <img src={form.thumbnail} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <button 
+                  type="button" 
+                  onClick={() => setForm(f => ({ ...f, thumbnail: '' }))}
+                  style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(239,68,68,0.9)', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
+                </button>
+              </div>
+            ) : (
+              <div style={{ marginTop: '10px', padding: '20px', border: '1px dashed #cbd5e1', borderRadius: '8px', textAlign: 'center', color: '#64748b' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '2rem', marginBottom: '8px', opacity: 0.5 }}>image</span>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>Chưa có thumbnail.</p>
+              </div>
+            )}
           </div>
 
           {/* Mô tả */}
