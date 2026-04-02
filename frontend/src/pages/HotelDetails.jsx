@@ -68,6 +68,8 @@ const HotelDetails = () => {
 
   const { user } = useAuth();
   const [isBooking, setIsBooking] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [sliderIndex, setSliderIndex] = useState(null);
 
   // Reviews
   const [reviews, setReviews] = useState([]);
@@ -309,7 +311,7 @@ const HotelDetails = () => {
       {/* Hero Gallery */}
       <section className="hd-gallery">
         <div className="hd-gallery__grid">
-          <div className="hd-gallery__main">
+          <div className="hd-gallery__main" onClick={() => setSliderIndex(0)} style={{ cursor: 'pointer' }}>
             <div className="hd-gallery__overlay"></div>
             <img src={heroImg} alt={hotel.name} />
             <div className="hd-gallery__name">
@@ -318,10 +320,10 @@ const HotelDetails = () => {
             </div>
           </div>
           {images.slice(1, 5).map((src, i) => (
-            <div key={i} className="hd-gallery__sub">
+            <div key={i} className="hd-gallery__sub" onClick={() => setSliderIndex(i + 1)} style={{ cursor: 'pointer' }}>
               <img src={src} alt={`Ảnh ${i + 2}`} />
               {i === 3 && images.length > 5 && (
-                <div className="hd-gallery__more">
+                <div className="hd-gallery__more" onClick={(e) => { e.stopPropagation(); setShowGallery(true); }}>
                   <span className="material-symbols-outlined">grid_view</span>
                   Xem thêm +{images.length - 5} ảnh
                 </div>
@@ -780,6 +782,71 @@ const HotelDetails = () => {
           </div>
         )}
       </section>
+
+      {/* ── Modal Slider (Full Screen) ── */}
+      {sliderIndex !== null && (
+        <div className="hd-slider-overlay">
+          <div className="hd-slider-header">
+            <button className="hd-slider-back" onClick={() => setSliderIndex(null)}>
+              <span className="material-symbols-outlined">arrow_back</span> Thư viện ảnh
+            </button>
+            <div className="hd-slider-meta">
+              <span className="hd-slider-hotel-name">{hotel.name}</span>
+              <button className="btn-primary" style={{ padding: '0.4rem 1rem', borderRadius: '4px', border: 'none', background: '#0284c7', color: '#fff', cursor: 'pointer', fontWeight: 600 }} onClick={() => { setSliderIndex(null); setShowGallery(false); window.scrollTo({ top: 500, behavior: 'smooth' }) }}>Đặt ngay</button>
+            </div>
+          </div>
+          
+          <div className="hd-slider-body">
+            <button className="hd-slider-nav hd-slider-nav--left" 
+                onClick={(e) => { e.stopPropagation(); setSliderIndex((prev) => prev === 0 ? images.length - 1 : prev - 1); }}>
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            
+            <div className="hd-slider-main-img">
+              <img src={images[sliderIndex]} alt={`Slide ${sliderIndex + 1}`} />
+            </div>
+            
+            <button className="hd-slider-nav hd-slider-nav--right" 
+                onClick={(e) => { e.stopPropagation(); setSliderIndex((prev) => prev === images.length - 1 ? 0 : prev + 1); }}>
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+          
+          <div className="hd-slider-footer">
+            <div className="hd-slider-counter">{sliderIndex + 1} / {images.length}</div>
+            <div className="hd-slider-thumbs">
+              {images.map((img, idx) => (
+                <div key={idx} 
+                     className={`hd-slider-thumb ${idx === sliderIndex ? 'hd-slider-thumb--active' : ''}`}
+                     onClick={() => setSliderIndex(idx)}>
+                  <img src={img} alt={`Thumb ${idx + 1}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal Gallery ── */}
+      {showGallery && sliderIndex === null && (
+        <div className="hd-gallery-modal-overlay" onClick={() => setShowGallery(false)}>
+          <div className="hd-gallery-modal" onClick={e => e.stopPropagation()}>
+            <div className="hd-gallery-modal__header">
+              <h3>Tất cả hình ảnh ({images.length})</h3>
+              <button className="hd-gallery-modal__close" onClick={() => setShowGallery(false)}>
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="hd-gallery-modal__grid">
+              {images.map((img, idx) => (
+                <div key={idx} className="hd-gallery-modal__item" onClick={() => setSliderIndex(idx)}>
+                  <img src={img} alt={`Gallery ${idx + 1}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
