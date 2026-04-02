@@ -25,7 +25,17 @@ const promotionSchema = new mongoose.Schema(
     },
     discountValue: {
       type: Number,
-      required: true
+      required: true,
+      min: [0, "Giá trị giảm giá không thể âm"],
+      validate: {
+        validator: function (value) {
+          if (this.discountType === 'percentage') {
+            return value <= 100;
+          }
+          return true;
+        },
+        message: "Phần trăm giảm giá không thể vượt quá 100%"
+      }
     },
     startDate: {
       type: Date,
@@ -33,7 +43,13 @@ const promotionSchema = new mongoose.Schema(
     },
     endDate: {
       type: Date,
-      required: true
+      required: true,
+      validate: {
+        validator: function (value) {
+          return value > this.startDate;
+        },
+        message: "Ngày kết thúc phải sau ngày bắt đầu"
+      }
     },
     minNights: {
       type: Number,

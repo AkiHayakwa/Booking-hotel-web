@@ -18,11 +18,23 @@ const bookingSchema = new mongoose.Schema(
     }],
     checkInDate: {
       type: Date,
-      required: [true, "Check-in date is required"]
+      required: [true, "Check-in date is required"],
+      validate: {
+        validator: function (value) {
+          return value >= new Date().setHours(0, 0, 0, 0);
+        },
+        message: "Ngày nhận phòng không thể trong quá khứ"
+      }
     },
     checkOutDate: {
       type: Date,
-      required: [true, "Check-out date is required"]
+      required: [true, "Check-out date is required"],
+      validate: {
+        validator: function (value) {
+          return value > this.checkInDate;
+        },
+        message: "Ngày trả phòng phải sau ngày nhận phòng"
+      }
     },
     numberOfGuests: {
       type: Number,

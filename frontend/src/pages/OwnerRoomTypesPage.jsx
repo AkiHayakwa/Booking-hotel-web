@@ -208,7 +208,7 @@ function RoomTypeModal({ editTarget, onClose, onSaved, hotelId }) {
           <div className="admin-form-row">
             <div className="admin-form-group">
               <label className="admin-form-label">Giá / đêm (VNĐ) *</label>
-              <input type="number" className="admin-form-input" required min="0"
+              <input type="number" className="admin-form-input" required min="1000"
                 value={form.pricePerNight} onChange={e => set('pricePerNight', e.target.value)}
                 placeholder="VD: 800000" />
             </div>

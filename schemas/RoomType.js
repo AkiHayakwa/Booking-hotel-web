@@ -12,7 +12,7 @@ const roomTypeSchema = new mongoose.Schema(
     pricePerNight: {
       type: Number,
       required: [true, "Price per night is required"],
-      min: [0, "Price cannot be negative"]
+      min: [1000, "Giá phòng không thể thấp hơn 1.000 VND"]
     },
     maxGuests: {
       type: Number,
