@@ -51,6 +51,8 @@ export default function OwnerReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const fetchReviews = useCallback(async () => {
     if (!activeHotelId) { setReviews([]); setLoading(false); return; }
@@ -81,6 +83,9 @@ export default function OwnerReviewsPage() {
     const name = r.user?.fullName || r.user?.username || '';
     return name.toLowerCase().includes(q) || (r.comment || '').toLowerCase().includes(q);
   });
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginatedReviews = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <OwnerLayout searchPlaceholder="Tìm đánh giá..." onSearch={setSearch}>
@@ -147,8 +152,9 @@ export default function OwnerReviewsPage() {
           <p>{total === 0 ? 'Các đánh giá sẽ hiển thị sau khi khách hàng đánh giá khách sạn.' : 'Thử từ khóa khác.'}</p>
         </div>
       ) : (
+        <>
         <div className="orv-list">
-          {filtered.map(r => {
+          {paginatedReviews.map(r => {
             const name = r.user?.fullName || r.user?.username || 'Khách';
             const avatar = r.user?.avatarUrl ||
               `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0891b2&color=fff&size=80`;
@@ -169,6 +175,22 @@ export default function OwnerReviewsPage() {
             );
           })}
         </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="admin-pagination" style={{ marginTop: '1.25rem' }}>
+            <span className="admin-pagination__info">
+              Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filtered.length)} / {filtered.length}
+            </span>
+            <div className="admin-pagination__controls">
+              <button className="admin-pagination__btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>‹</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button key={p} className={`admin-pagination__btn${p === currentPage ? ' active' : ''}`} onClick={() => setCurrentPage(p)}>{p}</button>
+              ))}
+              <button className="admin-pagination__btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>›</button>
+            </div>
+          </div>
+        )}
+        </>
       )}
     </OwnerLayout>
   );

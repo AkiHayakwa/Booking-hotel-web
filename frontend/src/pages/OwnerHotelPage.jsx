@@ -9,6 +9,25 @@ import './OwnerHotelPage.css';
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('vi-VN') : '—';
 const fmtPrice = (n) => Number(n || 0).toLocaleString('vi-VN');
 
+const VN_CITIES = [
+  "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn", "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Định", 
+  "Bình Dương", "Bình Phước", "Bình Thuận", "Cà Mau", "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk", 
+  "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp", "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội", 
+  "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang", "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang", 
+  "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn", "Lào Cai", "Long An", "Nam Định", "Nghệ An", 
+  "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên", "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh", 
+  "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế", 
+  "Tiền Giang", "Trà Vinh", "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái", "Hồ Chí Minh"
+];
+
+const getStreetsForCity = (city = '') => {
+  const normalized = city.toLowerCase();
+  if (normalized.includes('hà nội')) return ['Nguyễn Trãi', 'Cầu Giấy', 'Kim Mã', 'Láng Hạ', 'Trần Duy Hưng', 'Hoàng Hoa Thám'];
+  if (normalized.includes('hồ chí minh')) return ['Nguyễn Huệ', 'Lê Lợi', 'Đồng Khởi', 'Điện Biên Phủ', 'Võ Văn Kiệt', 'Phạm Văn Đồng'];
+  if (normalized.includes('đà nẵng')) return ['Bạch Đằng', 'Trần Phú', 'Nguyễn Văn Linh', 'Lê Duẩn', 'Võ Nguyên Giáp'];
+  return ['Lê Lợi', 'Nguyễn Huệ', 'Trần Hưng Đạo', 'Hùng Vương', 'Nguyễn Thái Học', 'Điện Biên Phủ', 'Quang Trung'];
+};
+
 /* ─── Stars ──────────────────────────── */
 function Stars({ rating }) {
   return (
@@ -167,8 +186,12 @@ function HotelFormModal({ editTarget, amenities, onClose, onSaved }) {
             <div className="admin-form-group">
               <label className="admin-form-label">Thành phố *</label>
               <input type="text" className="admin-form-input" required
+                list="vietnam_cities_owner"
                 value={form.city} onChange={e => set('city', e.target.value)}
                 placeholder="VD: Đà Nẵng" />
+              <datalist id="vietnam_cities_owner">
+                {VN_CITIES.map(c => <option key={c} value={c} />)}
+              </datalist>
             </div>
           </div>
 
@@ -176,8 +199,12 @@ function HotelFormModal({ editTarget, amenities, onClose, onSaved }) {
           <div className="admin-form-group">
             <label className="admin-form-label">Địa chỉ *</label>
             <input type="text" className="admin-form-input" required
+              list="suggested_streets_owner"
               value={form.address} onChange={e => set('address', e.target.value)}
               placeholder="VD: 123 Bãi Biển Mỹ Khê" />
+            <datalist id="suggested_streets_owner">
+              {getStreetsForCity(form.city).map(s => <option key={s} value={s} />)}
+            </datalist>
           </div>
 
           {/* Phone + Email */}
@@ -185,12 +212,16 @@ function HotelFormModal({ editTarget, amenities, onClose, onSaved }) {
             <div className="admin-form-group">
               <label className="admin-form-label">Điện thoại</label>
               <input type="tel" className="admin-form-input"
+                pattern="[0-9]{10,11}"
+                title="Số điện thoại phải từ 10-11 chữ số"
                 value={form.phone} onChange={e => set('phone', e.target.value)}
                 placeholder="0123.456.789" />
             </div>
             <div className="admin-form-group">
               <label className="admin-form-label">Email liên hệ</label>
               <input type="email" className="admin-form-input"
+                pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                title="Vui lòng nhập định dạng email hợp lệ"
                 value={form.email} onChange={e => set('email', e.target.value)}
                 placeholder="hotel@example.com" />
             </div>
@@ -241,10 +272,10 @@ function HotelFormModal({ editTarget, amenities, onClose, onSaved }) {
 
           {/* Mô tả */}
           <div className="admin-form-group">
-            <label className="admin-form-label">Mô tả</label>
-            <textarea className="admin-form-textarea" rows={3}
+            <label className="admin-form-label">Mô tả *</label>
+            <textarea className="admin-form-textarea" rows={3} required minLength={10}
               value={form.description} onChange={e => set('description', e.target.value)}
-              placeholder="Giới thiệu về khách sạn..." />
+              placeholder="Giới thiệu về khách sạn (tối thiểu 10 ký tự)..." />
           </div>
 
           {/* Tiện nghi */}

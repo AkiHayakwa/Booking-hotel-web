@@ -251,6 +251,8 @@ export default function OwnerBookingsPage() {
   // Filters
   const [statusTab, setStatusTab] = useState('');
   const [search, setSearch]       = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // UI
   const [toast, setToast]               = useState(null);
@@ -326,6 +328,9 @@ export default function OwnerBookingsPage() {
       );
     });
 
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginatedBookings = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   /* ── Stats ── */
   const countStatus = (s) => bookings.filter(b => b.status === s).length;
   const pendingCount = countStatus('pending');
@@ -372,7 +377,7 @@ export default function OwnerBookingsPage() {
             id="select-hotel-for-bookings"
             className="obk-hotel-selector__select"
             value={activeHotelId}
-            onChange={e => { setActiveHotelId(e.target.value); setStatusTab(''); setSearch(''); }}
+            onChange={e => { setActiveHotelId(e.target.value); setStatusTab(''); setSearch(''); setCurrentPage(1); }}
           >
             {hotels.length === 0 && <option value="">Chưa có khách sạn</option>}
             {hotels.map(h => (
@@ -433,7 +438,7 @@ export default function OwnerBookingsPage() {
               return (
                 <button key={t.key}
                   className={`obk-tab${statusTab === t.key ? ' active' : ''}`}
-                  onClick={() => setStatusTab(t.key)}
+                  onClick={() => { setStatusTab(t.key); setCurrentPage(1); }}
                 >
                   {t.label}
                   <span className={`obk-tab__count${isPending ? ' obk-tab__count--alert' : ''}`}>
@@ -495,7 +500,7 @@ export default function OwnerBookingsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map(b => {
+                    {paginatedBookings.map(b => {
                       const n = nights(b.checkInDate, b.checkOutDate);
                       const actions = getActions(b.status);
                       const isActing = actionLoading === b._id;
@@ -589,6 +594,21 @@ export default function OwnerBookingsPage() {
                   </tbody>
                 </table>
               </div>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="admin-pagination">
+                  <span className="admin-pagination__info">
+                    Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filtered.length)} / {filtered.length}
+                  </span>
+                  <div className="admin-pagination__controls">
+                    <button className="admin-pagination__btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>‹</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      <button key={p} className={`admin-pagination__btn${p === currentPage ? ' active' : ''}`} onClick={() => setCurrentPage(p)}>{p}</button>
+                    ))}
+                    <button className="admin-pagination__btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>›</button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>

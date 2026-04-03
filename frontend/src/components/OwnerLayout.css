@@ -467,7 +467,7 @@
   background: #f8fafc; transition: 0.18s;
   box-sizing: border-box;
 }
-.owner-form-textarea { resize: vertical; min-height: 80px; }
+.owner-form-textarea { resize: vertical; min-height: 80px; overflow-wrap: break-word; word-break: break-all; }
 .owner-form-input:focus,
 .owner-form-select:focus,
 .owner-form-textarea:focus {
