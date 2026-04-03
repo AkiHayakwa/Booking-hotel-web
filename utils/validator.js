@@ -78,14 +78,16 @@ module.exports = {
         body('address').notEmpty().withMessage("address khong duoc de trong"),
         body('city').notEmpty().withMessage("city khong duoc de trong"),
         body('phone').optional({ checkFalsy: true }).matches(/^[0-9]{10,11}$/).withMessage("Số điện thoại phải từ 10-11 chữ số"),
-        body('description').optional({ checkFalsy: true }).isLength({ min: 50 }).withMessage("Mô tả phải có ít nhất 50 ký tự"),
+        body('email').optional({ checkFalsy: true }).isEmail().withMessage("Email sai định dạng").normalizeEmail(),
+        body('description').optional({ checkFalsy: true }).isLength({ min: 10 }).withMessage("Mô tả phải có ít nhất 10 ký tự"),
     ],
     UpdateHotelValidator: [
         body('name').optional({ checkFalsy: true }).notEmpty().withMessage("name khong duoc de trong"),
         body('address').optional({ checkFalsy: true }).notEmpty().withMessage("address khong duoc de trong"),
         body('city').optional({ checkFalsy: true }).notEmpty().withMessage("city khong duoc de trong"),
         body('phone').optional({ checkFalsy: true }).matches(/^[0-9]{10,11}$/).withMessage("Số điện thoại phải từ 10-11 chữ số"),
-        body('description').optional({ checkFalsy: true }).isLength({ min: 50 }).withMessage("Mô tả phải có ít nhất 50 ký tự"),
+        body('email').optional({ checkFalsy: true }).isEmail().withMessage("Email sai định dạng").normalizeEmail(),
+        body('description').optional({ checkFalsy: true }).isLength({ min: 10 }).withMessage("Mô tả phải có ít nhất 10 ký tự"),
     ],
     CreateBlogValidator: [
         body('title').notEmpty().withMessage("title khong duoc de trong"),

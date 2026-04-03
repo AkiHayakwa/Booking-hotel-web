@@ -215,6 +215,8 @@ export default function OwnerRoomsPage() {
   // Filters
   const [filterType, setFilterType]     = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [currentPage, setCurrentPage]   = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // UI state
   const [toast, setToast]                         = useState(null);
@@ -300,6 +302,9 @@ export default function OwnerRoomsPage() {
     .filter(r => !filterType   || (r.roomType?._id === filterType || r.roomType === filterType))
     .filter(r => !filterStatus || r.status === filterStatus);
 
+  const totalPages = Math.ceil(filteredRooms.length / ITEMS_PER_PAGE);
+  const paginatedRooms = filteredRooms.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   /* ── Stats ── */
   const countByStatus = (s) => rooms.filter(r => r.status === s).length;
 
@@ -330,7 +335,7 @@ export default function OwnerRoomsPage() {
             id="select-hotel-for-rooms"
             className="orm-hotel-selector__select"
             value={activeHotelId}
-            onChange={e => { setActiveHotelId(e.target.value); setFilterType(''); setFilterStatus(''); }}>
+            onChange={e => { setActiveHotelId(e.target.value); setFilterType(''); setFilterStatus(''); setCurrentPage(1); }}>
             {hotels.length === 0 && <option value="">Chưa có khách sạn</option>}
             {hotels.map(h => (
               <option key={h._id} value={h._id}>
@@ -384,7 +389,7 @@ export default function OwnerRoomsPage() {
             <span className="orm-filter-bar__label">Loại phòng:</span>
             <select className="orm-filter-select"
               value={filterType}
-              onChange={e => setFilterType(e.target.value)}>
+              onChange={e => { setFilterType(e.target.value); setCurrentPage(1); }}>
               <option value="">Tất cả ({rooms.length})</option>
               {roomTypes.map(rt => (
                 <option key={rt._id} value={rt._id}>
@@ -398,7 +403,7 @@ export default function OwnerRoomsPage() {
             <span className="orm-filter-bar__label">Trạng thái:</span>
             <select className="orm-filter-select"
               value={filterStatus}
-              onChange={e => setFilterStatus(e.target.value)}>
+              onChange={e => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
               <option value="">Tất cả</option>
               <option value="available">Trống</option>
               <option value="occupied">Đang ở</option>
@@ -454,7 +459,7 @@ export default function OwnerRoomsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredRooms.map(r => {
+                    {paginatedRooms.map(r => {
                       const st          = STATUS_LABELS[r.status] || STATUS_LABELS.available;
                       const isOccupied  = r.status === 'occupied';
                       const isMaint     = r.status === 'maintenance';
@@ -527,6 +532,21 @@ export default function OwnerRoomsPage() {
                   </tbody>
                 </table>
               </div>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="admin-pagination">
+                  <span className="admin-pagination__info">
+                    Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredRooms.length)} / {filteredRooms.length}
+                  </span>
+                  <div className="admin-pagination__controls">
+                    <button className="admin-pagination__btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>‹</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      <button key={p} className={`admin-pagination__btn${p === currentPage ? ' active' : ''}`} onClick={() => setCurrentPage(p)}>{p}</button>
+                    ))}
+                    <button className="admin-pagination__btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>›</button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>

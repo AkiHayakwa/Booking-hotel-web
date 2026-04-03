@@ -347,6 +347,8 @@ export default function OwnerPromotionsPage() {
   const [deleting, setDeleting] = useState(false);
 
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const fetchPromos = useCallback(async () => {
     if (!activeHotelId) { setPromos([]); setLoading(false); return; }
@@ -399,6 +401,9 @@ export default function OwnerPromotionsPage() {
     const q = search.toLowerCase();
     return p.title.toLowerCase().includes(q) || (p.promoCode || '').toLowerCase().includes(q);
   });
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginatedPromos = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const getStatus = (p) => {
     if (!p.isActive) return { label: 'Tắt', cls: 'opp-badge--off' };
@@ -484,6 +489,7 @@ export default function OwnerPromotionsPage() {
           )}
         </div>
       ) : (
+        <>
         <div className="opp-table-wrap">
           <table className="opp-table">
             <thead>
@@ -498,7 +504,7 @@ export default function OwnerPromotionsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(p => {
+              {paginatedPromos.map(p => {
                 const st = getStatus(p);
                 return (
                   <tr key={p._id}>
@@ -543,6 +549,22 @@ export default function OwnerPromotionsPage() {
             </tbody>
           </table>
         </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="admin-pagination">
+            <span className="admin-pagination__info">
+              Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filtered.length)} / {filtered.length}
+            </span>
+            <div className="admin-pagination__controls">
+              <button className="admin-pagination__btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>‹</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button key={p} className={`admin-pagination__btn${p === currentPage ? ' active' : ''}`} onClick={() => setCurrentPage(p)}>{p}</button>
+              ))}
+              <button className="admin-pagination__btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>›</button>
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       {/* Modal */}

@@ -313,6 +313,8 @@ export default function OwnerRoomTypesPage() {
   // Confirm delete
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [deleting, setDeleting]           = useState(false);
+  const [currentPage, setCurrentPage]     = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   /* ── Fetch danh sách theo activeHotelId ── */
   const fetchRoomTypes = useCallback(async () => {
@@ -368,6 +370,9 @@ export default function OwnerRoomTypesPage() {
   const prices    = roomTypes.map(rt => rt.pricePerNight);
   const minPrice  = prices.length > 0 ? Math.min(...prices) : null;
   const maxPrice  = prices.length > 0 ? Math.max(...prices) : null;
+
+  const totalPages = Math.ceil(roomTypes.length / ITEMS_PER_PAGE);
+  const paginatedRoomTypes = roomTypes.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <OwnerLayout searchPlaceholder="Tìm loại phòng...">
@@ -476,9 +481,10 @@ export default function OwnerRoomTypesPage() {
           </button>
         </div>
       ) : (
-        /* ── Card Grid ── */
+        <>
+        {/* ── Card Grid ── */}
         <div className="ort-grid">
-          {roomTypes.map(rt => (
+          {paginatedRoomTypes.map(rt => (
             <RoomTypeCard
               key={rt._id}
               rt={rt}
@@ -487,6 +493,22 @@ export default function OwnerRoomTypesPage() {
             />
           ))}
         </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="admin-pagination" style={{ marginTop: '1.25rem' }}>
+            <span className="admin-pagination__info">
+              Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, roomTypes.length)} / {roomTypes.length}
+            </span>
+            <div className="admin-pagination__controls">
+              <button className="admin-pagination__btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>‹</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button key={p} className={`admin-pagination__btn${p === currentPage ? ' active' : ''}`} onClick={() => setCurrentPage(p)}>{p}</button>
+              ))}
+              <button className="admin-pagination__btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>›</button>
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       {/* ── Modal Tạo / Sửa ── */}
