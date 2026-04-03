@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../components/AdminLayout';
 import statsApi from '../api/statsApi';
 import bookingApi from '../api/bookingApi';
@@ -15,6 +16,7 @@ const BOOKINGS_MOCK = [
 const MAP_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBLJgLoxrPjK_8tMzNI0pHZgsascmiynS_7WvHPKbuhSPDWskods_qnV_QuV3jWovh3nl1InpBNXTJQrTrx6XAxYYPqY-8d8gOFvRPzdspycL3DM9Lw_M0LywVRbefT4UbBc4LHk3i8pI9m_xThAsgM1_CLgcSx6KvnhSdr6W0Bf86EBjMke1mBTJoE3GY2thBs09uk2uzZ_grqcfSOEiVglg-Q11aQ8jIXoheHtg9J6NOYBqxp1vYfTFk5P4TcjhCAaFVwoHeYeg';
 
 export default function AdminDashboardPage() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalBookings: 0,
     totalRevenue: 0,
@@ -51,10 +53,10 @@ export default function AdminDashboardPage() {
 
   // Mảng chứa cấu hình hiển thị các thẻ stat
   const statCards = [
-    { icon: 'book_online', cls: 'primary', label: 'Total Bookings',  value: stats.totalBookings,   badge: '+12.5%' },
-    { icon: 'payments',    cls: 'accent',  label: 'Total Revenue',   value: `$${(stats.totalRevenue || 0).toLocaleString()}`, badge: '+8.2%'  },
-    { icon: 'person',      cls: 'blue',    label: 'Total Users',     value: stats.totalUsers,   badge: '+5.4%'  },
-    { icon: 'star',        cls: 'yellow',  label: 'Average Rating',   value: stats.avgRating,     badge: '+0.2%', sub: '/ 5.0' },
+    { icon: 'book_online', cls: 'primary', label: 'Total Bookings',  value: stats.totalBookings },
+    { icon: 'payments',    cls: 'accent',  label: 'Total Revenue',   value: `$${(stats.totalRevenue || 0).toLocaleString()}` },
+    { icon: 'person',      cls: 'blue',    label: 'Total Users',     value: stats.totalUsers },
+    { icon: 'star',        cls: 'yellow',  label: 'Average Rating',   value: stats.avgRating, sub: '/ 5.0' },
   ];
 
   return (
@@ -67,7 +69,6 @@ export default function AdminDashboardPage() {
               <div className={`admin-stat-card__icon admin-stat-card__icon--${s.cls}`}>
                 <span className="material-symbols-outlined">{s.icon}</span>
               </div>
-              <span className="admin-stat-card__badge admin-stat-card__badge--up">{s.badge}</span>
             </div>
             <p className="admin-stat-card__label">{s.label}</p>
             <p className="admin-stat-card__value">
@@ -159,15 +160,15 @@ export default function AdminDashboardPage() {
               Quick Actions
             </h3>
             <div className="dash-quick-actions__btns">
-              <button className="dash-qa-btn dash-qa-btn--accent">
+              <button className="dash-qa-btn dash-qa-btn--accent" onClick={() => navigate('/admin/hotels')}>
                 <span className="material-symbols-outlined">add_circle</span>
                 Add New Hotel
               </button>
-              <button className="dash-qa-btn dash-qa-btn--ghost">
+              <button className="dash-qa-btn dash-qa-btn--ghost" onClick={() => navigate('/admin/reports')}>
                 <span className="material-symbols-outlined">description</span>
                 View All Reports
               </button>
-              <button className="dash-qa-btn dash-qa-btn--ghost">
+              <button className="dash-qa-btn dash-qa-btn--ghost" onClick={() => navigate('/admin/promotions')}>
                 <span className="material-symbols-outlined">campaign</span>
                 Manage Promotions
               </button>
@@ -182,26 +183,8 @@ export default function AdminDashboardPage() {
             <button className="dash-spotlight__btn">Review Data</button>
           </div>
 
-          {/* Map */}
-          <div className="admin-table-card dash-map-card">
-            <div className="admin-table-card__header">
-              <p className="dash-map-label">Top Booking Location</p>
-            </div>
-            <div className="dash-map-img-wrap">
-              <img src={MAP_IMG} alt="Paris map" className="dash-map-img" />
-              <div className="dash-map-pin">
-                <span className="material-symbols-outlined">location_on</span>
-                Paris, France
-              </div>
-            </div>
-            <div className="dash-map-footer">
-              <span>Bookings (MTD)</span>
-              <span className="dash-map-count">452 Rooms</span>
-            </div>
-          </div>
         </div>
       </div>
-
       {/* Footer */}
       <footer className="dash-footer">
         <p>© 2024 <strong>LuxStay Booking</strong> Admin Panel</p>

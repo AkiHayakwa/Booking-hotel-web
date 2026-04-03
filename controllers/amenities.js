@@ -4,10 +4,12 @@ module.exports = {
     GetAllAmenity: async function () {
         return await amenityModel.find({ isDeleted: false })
     },
-    CreateAmenity: async function (name, icon) {
+    CreateAmenity: async function (body) {
         let newItem = new amenityModel({
-            name: name,
-            icon: icon || ""
+            name: body.name,
+            icon: body.icon || "",
+            type: body.type || 'both',
+            description: body.description || ""
         });
         await newItem.save();
         return newItem;

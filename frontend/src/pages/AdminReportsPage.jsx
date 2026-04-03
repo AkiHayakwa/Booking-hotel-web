@@ -31,10 +31,10 @@ export default function AdminReportsPage() {
   }, []);
 
   const SUMMARY_METRICS = [
-    { icon: 'payments',      label: 'Total Revenue',     value: `$${(stats.totalRevenue || 0).toLocaleString()}`, badge: '12.5%', iconCls: 'primary' },
-    { icon: 'receipt_long',  label: 'Total Bookings', value: (stats.totalBookings || 0).toString(),    badge: '3.2%',  iconCls: 'blue'    },
-    { icon: 'group',       label: 'Total Users',        value: (stats.totalUsers || 0).toString(),    badge: '8.4%',  iconCls: 'accent'  },
-    { icon: 'star', label: 'Average Rating',    value: (stats.avgRating || 0).toString(),       badge: '5.1%',  iconCls: 'purple'  },
+    { icon: 'payments',      label: 'Total Revenue',     value: `$${(stats.totalRevenue || 0).toLocaleString()}`, iconCls: 'primary' },
+    { icon: 'receipt_long',  label: 'Total Bookings', value: (stats.totalBookings || 0).toString(),    iconCls: 'blue'    },
+    { icon: 'group',       label: 'Total Users',        value: (stats.totalUsers || 0).toString(),    iconCls: 'accent'  },
+    { icon: 'star', label: 'Average Rating',    value: (stats.avgRating || 0).toString(),       iconCls: 'purple'  },
   ];
 
   const MONTHLY_STATS = [
@@ -70,9 +70,6 @@ export default function AdminReportsPage() {
               <div className={`admin-stat-card__icon admin-stat-card__icon--${m.iconCls}`}>
                 <span className="material-symbols-outlined">{m.icon}</span>
               </div>
-              <span className="admin-stat-card__badge admin-stat-card__badge--up">
-                <span className="material-symbols-outlined text-xs">trending_up</span> {m.badge}
-              </span>
             </div>
             <p className="admin-stat-card__label">{m.label}</p>
             <p className="admin-stat-card__value">{m.value}</p>
@@ -138,62 +135,6 @@ export default function AdminReportsPage() {
         </div>
       </div>
 
-      {/* ── Performance & History ── */}
-      <div className="rpt-history-grid">
-        {/* Top Hotels */}
-        <div className="rpt-chart-card">
-          <h4 className="rpt-chart-title">Top Performing Hotels</h4>
-          <div className="rpt-hotels-list">
-            {stats.topHotels?.length > 0 ? (
-              stats.topHotels.map(h => (
-                <div key={h.name} className="rpt-hotel-item">
-                  <div className="rpt-hotel-info">
-                    <span>{h.name}</span>
-                    <span className="rpt-hotel-val">{h.revenue}</span>
-                  </div>
-                  <div className="rpt-progress-bar">
-                    <div className="rpt-progress-fill" style={{ width: `${h.percent}%` }}></div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-sm" style={{color: '#64748b'}}>Chưa có dữ liệu khách sạn</p>
-            )}
-          </div>
-        </div>
-
-        {/* Monthly Summary */}
-        <div className="rpt-table-card lg-col-span-2">
-          <div className="rpt-table-header">
-            <h4 className="rpt-chart-title">Monthly Performance Summary</h4>
-            <button className="rpt-view-all">View All</button>
-          </div>
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th className="text-right">Total Bookings</th>
-                  <th className="text-right">Revenue</th>
-                  <th className="text-right">Growth %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {MONTHLY_STATS.map(s => (
-                  <tr key={s.month}>
-                    <td><strong>{s.month}</strong></td>
-                    <td className="text-right">{s.bookings}</td>
-                    <td className="text-right font-bold">{s.revenue}</td>
-                    <td className={`text-right font-bold ${s.up ? 'text-green' : 'text-red'}`}>
-                      {s.growth}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
 
       <footer className="rpt-footer">
         <p>© 2024 <strong>LuxStay Booking</strong> Admin Portal. Confidential Data.</p>
