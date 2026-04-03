@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 let promotionController = require('../controllers/promotions')
 let { CheckLogin, checkRole, checkHotelOwner } = require('../utils/authHandler')
-let { CreatePromotionValidator, validatedResult } = require('../utils/validator')
+let { CreatePromotionValidator, UpdatePromotionValidator, validatedResult } = require('../utils/validator')
 
 // Public: uu dai dang hieu luc
 router.get('/', async function (req, res, next) {
@@ -41,7 +41,7 @@ router.post('/validate', CheckLogin, async function (req, res, next) {
         res.send(result)
     }
 })
-router.put('/:id', CheckLogin, checkRole('hotel_owner', 'admin'), async function (req, res, next) {
+router.put('/:id', CheckLogin, checkRole('hotel_owner', 'admin'), UpdatePromotionValidator, validatedResult, async function (req, res, next) {
     let result = await promotionController.UpdatePromotion(req.params.id, req.body);
     if (!result) {
         res.status(404).send("khong tim thay uu dai")

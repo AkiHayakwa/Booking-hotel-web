@@ -6,6 +6,8 @@ import './AdminReviewsPage.css';
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const fetchReviews = async () => {
     setLoading(true);
@@ -52,6 +54,25 @@ export default function AdminReviewsPage() {
     return <div style={{ display: 'flex', alignItems: 'center' }}>{stars}</div>;
   };
 
+  const totalPages = Math.ceil(reviews.length / ITEMS_PER_PAGE) || 1;
+  const currentData = reviews.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  const getPaginationArray = () => {
+    let pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            pages.push(i);
+        } else if (pages[pages.length - 1] !== '...') {
+            pages.push('...');
+        }
+    }
+    return pages;
+  };
+
   return (
     <AdminLayout activePath="/admin/reviews" searchPlaceholder="Tìm kiếm đánh giá (chưa hỗ trợ)...">
       <div className="admin-reviews">
@@ -82,8 +103,8 @@ export default function AdminReviewsPage() {
               <tbody>
                 {loading ? (
                   <tr><td colSpan="6" className="text-center py-8">Đang tải dữ liệu...</td></tr>
-                ) : reviews.length > 0 ? (
-                  reviews.map((r) => (
+                ) : currentData.length > 0 ? (
+                  currentData.map((r) => (
                     <tr key={r._id}>
                       <td>
                         <div className="review-user-info">
@@ -142,6 +163,49 @@ export default function AdminReviewsPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* ── Pagination ── */}
+          <div className="admin-pagination" style={{ padding: '1rem', borderTop: '1px solid #e2e8f0' }}>
+            <p className="admin-pagination__info">
+              Showing <strong>{reviews.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0}</strong> to <strong>{Math.min(currentPage * ITEMS_PER_PAGE, reviews.length)}</strong> of <strong>{reviews.length}</strong> results
+            </p>
+            {totalPages > 1 && (
+              <div className="admin-pagination__controls">
+                <button 
+                  type="button"
+                  className="admin-pagination__btn" 
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+                
+                {getPaginationArray().map((item, idx) => (
+                  item === '...' ? (
+                    <span key={`sep-${idx}`} className="admin-pagination__sep">...</span>
+                  ) : (
+                    <button 
+                      type="button"
+                      key={item}
+                      className={`admin-pagination__btn ${currentPage === item ? 'active' : ''}`}
+                      onClick={() => handlePageChange(item)}
+                    >
+                      {item}
+                    </button>
+                  )
+                ))}
+                
+                <button 
+                  type="button"
+                  className="admin-pagination__btn" 
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
