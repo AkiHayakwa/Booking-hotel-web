@@ -22,7 +22,7 @@
 }
 
 .admin-reviews__stats-badge {
-  background: var(--primary-color);
+  background: #2563eb;
   color: white;
   padding: 0.75rem 1.25rem;
   border-radius: 0.5rem;
@@ -43,6 +43,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 160px;
+  white-space: nowrap;
 }
 
 .review-user-avatar {
@@ -77,6 +79,10 @@
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   border: 1px solid #e2e8f0;
+  min-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .review-hotel-name {

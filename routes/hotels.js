@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 let hotelController = require('../controllers/hotels')
 let { CheckLogin, checkRole, checkHotelOwner } = require('../utils/authHandler')
-let { CreateHotelValidator, validatedResult } = require('../utils/validator')
+let { CreateHotelValidator, UpdateHotelValidator, validatedResult } = require('../utils/validator')
 
 // Public: lay tat ca hotel da duyet
 router.get('/', async function (req, res, next) {
@@ -61,7 +61,7 @@ router.post('/', CheckLogin, checkRole('admin', 'hotel_owner'), CreateHotelValid
     }
 })
 // Hotel Owner: cap nhat hotel cua minh
-router.put('/:hotelId', CheckLogin, checkRole('hotel_owner', 'admin'), checkHotelOwner, async function (req, res, next) {
+router.put('/:hotelId', CheckLogin, checkRole('hotel_owner', 'admin'), checkHotelOwner, UpdateHotelValidator, validatedResult, async function (req, res, next) {
     let result = await hotelController.UpdateHotel(req.params.hotelId, req.body);
     if (!result) {
         res.status(404).send("khong tim thay khach san")

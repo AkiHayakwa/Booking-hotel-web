@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 let userController = require('../controllers/users')
 let { CheckLogin, checkRole } = require('../utils/authHandler')
+let { UpdateUserValidator, validatedResult } = require('../utils/validator')
 
 router.get('/', CheckLogin, checkRole('admin'), async function (req, res, next) {
     let result = await userController.GetAllUser();
@@ -21,7 +22,7 @@ router.get('/:id', CheckLogin, checkRole('admin'), async function (req, res, nex
     }
 })
 
-router.put('/:id', CheckLogin, checkRole('admin'), async function (req, res, next) {
+router.put('/:id', CheckLogin, checkRole('admin'), UpdateUserValidator, validatedResult, async function (req, res, next) {
     let result = await userController.UpdateUser(req.params.id, req.body);
     if (!result) {
         res.status(404).send("khong tim thay user")

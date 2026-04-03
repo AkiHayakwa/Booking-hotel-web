@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import './AdminSettingsPage.css';
 
@@ -35,10 +35,31 @@ export default function AdminSettingsPage() {
   );
   const [toastVisible,  setToastVisible]  = useState(false);
 
+  useEffect(() => {
+    const saved = localStorage.getItem('admin_settings');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.siteName) setSiteName(parsed.siteName);
+        if (parsed.contactEmail) setContactEmail(parsed.contactEmail);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.currency) setCurrency(parsed.currency);
+        if (parsed.taxRate !== undefined) setTaxRate(parsed.taxRate);
+        if (parsed.cancelPolicy) setCancelPolicy(parsed.cancelPolicy);
+        if (parsed.twoFa !== undefined) setTwoFa(parsed.twoFa);
+        if (parsed.notifs) setNotifs(parsed.notifs);
+      } catch(e) { console.error('Error parsing settings', e) }
+    }
+  }, []);
+
   const toggleNotif = (id, channel) =>
     setNotifs(prev => ({ ...prev, [id]: { ...prev[id], [channel]: !prev[id][channel] } }));
 
   const handleSave = () => {
+    const settingsObj = {
+      siteName, contactEmail, phone, currency, taxRate, cancelPolicy, twoFa, notifs
+    };
+    localStorage.setItem('admin_settings', JSON.stringify(settingsObj));
     setToastVisible(true);
     setTimeout(() => setToastVisible(false), 3000);
   };

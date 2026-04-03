@@ -46,10 +46,24 @@ module.exports = {
         }));
     },
     GetAllHotelAdmin: async function () {
-        return await hotelModel.find({ isDeleted: false })
+        let hotels = await hotelModel.find({ isDeleted: false })
             .populate('owner', 'username fullName email')
             .populate('amenities')
             .sort({ createdAt: -1 })
+            .lean();
+        
+        let roomModel = require('../schemas/Room');
+        let rooms = await roomModel.find({ isDeleted: false }).select('hotel').lean();
+        let roomCountMap = {};
+        rooms.forEach(r => {
+            const hid = r.hotel?.toString();
+            if (hid) roomCountMap[hid] = (roomCountMap[hid] || 0) + 1;
+        });
+
+        return hotels.map(h => ({
+            ...h,
+            roomCount: roomCountMap[h._id?.toString()] || 0
+        }));
     },
     GetHotelById: async function (id) {
         try {

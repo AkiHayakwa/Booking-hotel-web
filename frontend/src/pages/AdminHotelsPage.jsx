@@ -9,6 +9,25 @@ import './AdminHotelsPage.css';
 
 const TABS = ['All Hotels', 'Active', 'Pending', 'Maintenance'];
 
+const VN_CITIES = [
+  "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn", "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Định", 
+  "Bình Dương", "Bình Phước", "Bình Thuận", "Cà Mau", "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk", 
+  "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp", "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội", 
+  "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang", "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang", 
+  "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn", "Lào Cai", "Long An", "Nam Định", "Nghệ An", 
+  "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên", "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh", 
+  "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế", 
+  "Tiền Giang", "Trà Vinh", "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái", "Hồ Chí Minh"
+];
+
+const getStreetsForCity = (city = '') => {
+  const normalized = city.toLowerCase();
+  if (normalized.includes('hà nội')) return ['Nguyễn Trãi', 'Cầu Giấy', 'Kim Mã', 'Láng Hạ', 'Trần Duy Hưng', 'Hoàng Hoa Thám'];
+  if (normalized.includes('hồ chí minh')) return ['Nguyễn Huệ', 'Lê Lợi', 'Đồng Khởi', 'Điện Biên Phủ', 'Võ Văn Kiệt', 'Phạm Văn Đồng'];
+  if (normalized.includes('đà nẵng')) return ['Bạch Đằng', 'Trần Phú', 'Nguyễn Văn Linh', 'Lê Duẩn', 'Võ Nguyên Giáp'];
+  return ['Lê Lợi', 'Nguyễn Huệ', 'Trần Hưng Đạo', 'Hùng Vương', 'Nguyễn Thái Học', 'Điện Biên Phủ', 'Quang Trung'];
+};
+
 export default function AdminHotelsPage() {
   const { user: currentUser } = useAuth();
   const [hotels, setHotels] = useState([]);
@@ -19,6 +38,8 @@ export default function AdminHotelsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('All Hotels');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -212,11 +233,32 @@ export default function AdminHotelsPage() {
     return matchTab && (nameMatch || cityMatch);
   });
 
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+  const currentData = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const getPaginationArray = () => {
+    let pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            pages.push(i);
+        } else if (pages[pages.length - 1] !== '...') {
+            pages.push('...');
+        }
+    }
+    return pages;
+  };
+
   return (
     <AdminLayout 
       activePath="/admin/hotels" 
       searchPlaceholder="Search hotels by name or city..."
-      onSearch={(val) => setSearchTerm(val)}
+      onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
     >
       {/* Page Header */}
       <div className="admin-page-header admin-page-header--row">
@@ -259,7 +301,7 @@ export default function AdminHotelsPage() {
               <button
                 key={t}
                 className={`htl-tab${activeTab === t ? ' active' : ''}`}
-                onClick={() => setActiveTab(t)}
+                onClick={() => { setActiveTab(t); setCurrentPage(1); }}
               >{t}</button>
             ))}
           </div>
@@ -281,7 +323,9 @@ export default function AdminHotelsPage() {
             <tbody>
               {loading ? (
                  <tr><td colSpan="6" className="text-center">Đang tải dữ liệu...</td></tr>
-              ) : filtered.map(h => {
+              ) : currentData.length === 0 ? (
+                 <tr><td colSpan="6" className="text-center">Không có dữ liệu</td></tr>
+              ) : currentData.map(h => {
                 const isPending = !h.isApproved && !h.isRejected;
                 const status = isPending ? 'pending' : (h.isApproved ? 'active' : 'maintenance');
                 return (
@@ -299,7 +343,7 @@ export default function AdminHotelsPage() {
                     </td>
                     <td className="htl-location">{h.city || 'Unknown'}</td>
                     <td className="htl-owner">{h.owner?.fullName || h.owner?.username || 'N/A'}</td>
-                    <td style={{textAlign:'center'}} className="htl-rooms">{h.rooms?.length || 0}</td>
+                    <td style={{textAlign:'center'}} className="htl-rooms">{h.roomCount || 0}</td>
                     <td>
                       <div className={`admin-status admin-status--${status}`}>
                         <span className="admin-status__dot" />
@@ -342,15 +386,44 @@ export default function AdminHotelsPage() {
         {/* Pagination */}
         <div className="admin-pagination">
           <p className="admin-pagination__info">
-            Showing <strong>1</strong> to <strong>{filtered.length}</strong> of <strong>{hotels.length}</strong> entries
+            Showing <strong>{filtered.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0}</strong> to <strong>{Math.min(currentPage * ITEMS_PER_PAGE, filtered.length)}</strong> of <strong>{filtered.length}</strong> entries
           </p>
-          <div className="admin-pagination__controls">
-            <button className="admin-pagination__btn" disabled>
-              <span className="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button className="admin-pagination__btn active">1</button>
-            <button className="admin-pagination__btn">Next</button>
-          </div>
+          {totalPages > 1 && (
+            <div className="admin-pagination__controls">
+              <button 
+                type="button"
+                className="admin-pagination__btn" 
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              
+              {getPaginationArray().map((item, idx) => (
+                item === '...' ? (
+                  <span key={`sep-${idx}`} className="admin-pagination__sep">...</span>
+                ) : (
+                  <button 
+                    type="button"
+                    key={item}
+                    className={`admin-pagination__btn ${currentPage === item ? 'active' : ''}`}
+                    onClick={() => handlePageChange(item)}
+                  >
+                    {item}
+                  </button>
+                )
+              ))}
+              
+              <button 
+                type="button"
+                className="admin-pagination__btn" 
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -398,24 +471,24 @@ export default function AdminHotelsPage() {
               <div className="admin-form-row">
                 <div className="admin-form-group">
                   <label className="admin-form-label">City *</label>
-                  <select 
-                    name="city" className="admin-form-select" 
+                  <input 
+                    type="text" name="city" className="admin-form-input" 
+                    list="vietnam_cities"
                     value={formData.city} onChange={handleChange} required
-                  >
-                    <option value="Da Nang">Đà Nẵng</option>
-                    <option value="Ha Noi">Hà Nội</option>
-                    <option value="Ho Chi Minh">Hồ Chí Minh</option>
-                    <option value="Nha Trang">Nha Trang</option>
-                    <option value="Da Lat">Đà Lạt</option>
-                    <option value="Phu Quoc">Phú Quốc</option>
-                  </select>
+                    placeholder="Chọn hoặc nhập tên thành phố"
+                  />
+                  <datalist id="vietnam_cities">
+                    {VN_CITIES.map(c => <option key={c} value={c} />)}
+                  </datalist>
                 </div>
                 <div className="admin-form-group">
                   <label className="admin-form-label">Phone *</label>
                   <input 
                     type="text" name="phone" className="admin-form-input" 
                     value={formData.phone} onChange={handleChange} 
-                    required placeholder="0123.456.789"
+                    required placeholder="0901234567"
+                    pattern="^\d{10,11}$"
+                    title="Số điện thoại phải bao gồm 10-11 chữ số"
                   />
                 </div>
               </div>
@@ -424,9 +497,13 @@ export default function AdminHotelsPage() {
                 <label className="admin-form-label">Address *</label>
                 <input 
                   type="text" name="address" className="admin-form-input" 
+                  list="suggested_streets"
                   value={formData.address} onChange={handleChange} 
-                  required placeholder="123 Ocean Drive"
+                  required placeholder="Số nhà, tên đường phố..."
                 />
+                <datalist id="suggested_streets">
+                  {getStreetsForCity(formData.city).map(s => <option key={s} value={s} />)}
+                </datalist>
               </div>
 
               <div className="admin-form-group">
@@ -480,11 +557,12 @@ export default function AdminHotelsPage() {
               </div>
 
               <div className="admin-form-group">
-                <label className="admin-form-label">Description</label>
+                <label className="admin-form-label">Description *</label>
                 <textarea 
                   name="description" className="admin-form-textarea" 
                   value={formData.description} onChange={handleChange} 
                   placeholder="Tell us about the property..."
+                  required minLength={10}
                 />
               </div>
 

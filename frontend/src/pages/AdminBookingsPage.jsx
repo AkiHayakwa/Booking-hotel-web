@@ -12,6 +12,8 @@ export default function AdminBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('All Statuses');
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const fetchData = async () => {
     setLoading(true);
@@ -76,11 +78,32 @@ export default function AdminBookingsPage() {
     return matchStatus && matchSearch;
   });
 
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+  const currentData = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const getPaginationArray = () => {
+    let pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            pages.push(i);
+        } else if (pages[pages.length - 1] !== '...') {
+            pages.push('...');
+        }
+    }
+    return pages;
+  };
+
   return (
     <AdminLayout 
       activePath="/admin/bookings" 
       searchPlaceholder="Global search..."
-      onSearch={(val) => setSearchTerm(val)}
+      onSearch={(val) => { setSearch(val); setCurrentPage(1); }}
     >
       {/* Stats */}
       <div className="admin-stats-grid">
@@ -115,13 +138,13 @@ export default function AdminBookingsPage() {
               type="text"
               placeholder="Booking ID, Customer, or Hotel..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
             />
           </div>
         </div>
         <div className="bk-filter-bar__item">
           <label className="bk-filter-label">Status Filter</label>
-          <select className="bk-filter-input" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+          <select className="bk-filter-input" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}>
             <option>All Statuses</option>
             <option>Confirmed</option>
             <option>Pending</option>
@@ -163,7 +186,9 @@ export default function AdminBookingsPage() {
             <tbody>
               {loading ? (
                 <tr><td colSpan="7" className="text-center">Đang tải dữ liệu...</td></tr>
-              ) : filtered.map(b => (
+              ) : currentData.length === 0 ? (
+                <tr><td colSpan="7" className="text-center">Không có dữ liệu</td></tr>
+              ) : currentData.map(b => (
                 <tr key={b._id}>
                   <td className="bk-id">#{b._id?.slice(-6).toUpperCase()}</td>
                   <td>
@@ -182,8 +207,8 @@ export default function AdminBookingsPage() {
                     <p className="bk-hotel-room">{b.roomType?.name || 'Standard'}</p>
                   </td>
                   <td>
-                    <p className="bk-dates">{new Date(b.checkIn).toLocaleDateString()} - {new Date(b.checkOut).toLocaleDateString()}</p>
-                    <p className="bk-nights">{Math.ceil((new Date(b.checkOut) - new Date(b.checkIn)) / (1000 * 60 * 60 * 24))} Nights</p>
+                    <p className="bk-dates">{new Date(b.checkInDate).toLocaleDateString()} - {new Date(b.checkOutDate).toLocaleDateString()}</p>
+                    <p className="bk-nights">{Math.ceil((new Date(b.checkOutDate) - new Date(b.checkInDate)) / (1000 * 60 * 60 * 24))} Nights</p>
                   </td>
                   <td><span className={`admin-badge admin-badge--${b.status}`}>{b.status}</span></td>
                   <td className="bk-price">${b.totalAmount?.toLocaleString()}</td>
@@ -222,20 +247,42 @@ export default function AdminBookingsPage() {
 
         {/* Pagination */}
         <div className="admin-pagination">
-          <p className="admin-pagination__info">Showing 1-{filtered.length} of 1,482 results</p>
-          <div className="admin-pagination__controls">
-            <button className="admin-pagination__btn" disabled>
-              <span className="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button className="admin-pagination__btn active">1</button>
-            <button className="admin-pagination__btn">2</button>
-            <button className="admin-pagination__btn">3</button>
-            <span className="admin-pagination__sep">...</span>
-            <button className="admin-pagination__btn">38</button>
-            <button className="admin-pagination__btn">
-              <span className="material-symbols-outlined">chevron_right</span>
-            </button>
-          </div>
+          <p className="admin-pagination__info">
+            Showing {filtered.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filtered.length)} of {filtered.length} results
+          </p>
+          {totalPages > 1 && (
+            <div className="admin-pagination__controls">
+              <button 
+                className="admin-pagination__btn" 
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              
+              {getPaginationArray().map((item, idx) => (
+                item === '...' ? (
+                  <span key={`sep-${idx}`} className="admin-pagination__sep">...</span>
+                ) : (
+                  <button 
+                    key={item}
+                    className={`admin-pagination__btn ${currentPage === item ? 'active' : ''}`}
+                    onClick={() => handlePageChange(item)}
+                  >
+                    {item}
+                  </button>
+                )
+              ))}
+              
+              <button 
+                className="admin-pagination__btn" 
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>

@@ -12,6 +12,8 @@ export default function AdminUsersPage() {
   });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -119,6 +121,9 @@ export default function AdminUsersPage() {
           phone: formData.phone,
           roleName: formData.roleName
         };
+        if (formData.password) {
+          updateData.password = formData.password;
+        }
         // Cập nhật thông tin cơ bản
         await userApi.update(formData._id, updateData);
         // Nếu API backend chưa hỗ trợ cập nhật thẳng role từ update_user, ta gọi đổi role
@@ -151,11 +156,30 @@ export default function AdminUsersPage() {
     return name.includes(search) || email.includes(search);
   });
 
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE) || 1;
+  const currentData = filteredUsers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  const getPaginationArray = () => {
+    let pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            pages.push(i);
+        } else if (pages[pages.length - 1] !== '...') {
+            pages.push('...');
+        }
+    }
+    return pages;
+  };
+
   return (
     <AdminLayout 
       activePath="/admin/users" 
       searchPlaceholder="Search users by name or email..."
-      onSearch={(val) => setSearchTerm(val)}
+      onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
     >
       {/* ── Page Header ── */}
       <div className="admin-page-header admin-page-header--row">
@@ -215,7 +239,9 @@ export default function AdminUsersPage() {
             <tbody>
               {loading ? (
                 <tr><td colSpan="5" className="text-center">Đang tải dữ liệu...</td></tr>
-              ) : filteredUsers.map(u => (
+              ) : currentData.length === 0 ? (
+                <tr><td colSpan="5" className="text-center">Không có dữ liệu</td></tr>
+              ) : currentData.map(u => (
                 <tr key={u._id}>
                   <td>
                     <div className="usr-details">
@@ -275,14 +301,45 @@ export default function AdminUsersPage() {
 
         {/* ── Pagination ── */}
         <div className="admin-pagination">
-          <p className="admin-pagination__info">Showing 1-{users.length} of {users.length} results</p>
-          <div className="admin-pagination__controls">
-            <button className="admin-pagination__btn" disabled>
-              <span className="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button className="admin-pagination__btn active">1</button>
-            <button className="admin-pagination__btn">Next</button>
-          </div>
+          <p className="admin-pagination__info">
+            Showing <strong>{filteredUsers.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0}</strong> to <strong>{Math.min(currentPage * ITEMS_PER_PAGE, filteredUsers.length)}</strong> of <strong>{filteredUsers.length}</strong> results
+          </p>
+          {totalPages > 1 && (
+            <div className="admin-pagination__controls">
+              <button 
+                type="button"
+                className="admin-pagination__btn" 
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              
+              {getPaginationArray().map((item, idx) => (
+                item === '...' ? (
+                  <span key={`sep-${idx}`} className="admin-pagination__sep">...</span>
+                ) : (
+                  <button 
+                    type="button"
+                    key={item}
+                    className={`admin-pagination__btn ${currentPage === item ? 'active' : ''}`}
+                    onClick={() => handlePageChange(item)}
+                  >
+                    {item}
+                  </button>
+                )
+              ))}
+              
+              <button 
+                type="button"
+                className="admin-pagination__btn" 
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -337,7 +394,9 @@ export default function AdminUsersPage() {
                   <input 
                     type="text" name="phone" className="admin-form-input" 
                     value={formData.phone} onChange={handleChange} 
-                    placeholder="+84 123 456 789"
+                    placeholder="0901234567"
+                    pattern="^\d{10,11}$"
+                    title="Số điện thoại phải bao gồm 10-11 chữ số"
                   />
                 </div>
                 <div className="admin-form-group">
@@ -353,16 +412,16 @@ export default function AdminUsersPage() {
                 </div>
               </div>
 
-              {!isEdit && (
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Password *</label>
-                  <input 
-                    type="password" name="password" className="admin-form-input" 
-                    value={formData.password} onChange={handleChange} 
-                    required placeholder="Enter a secure password"
-                  />
-                </div>
-              )}
+              <div className="admin-form-group">
+                <label className="admin-form-label">Password {!isEdit && '*'}</label>
+                <input 
+                  type="password" name="password" className="admin-form-input" 
+                  value={formData.password} onChange={handleChange} 
+                  required={!isEdit} 
+                  minLength={6}
+                  placeholder={isEdit ? "Để trống nếu không muốn đổi mật khẩu" : "Nhập mật khẩu (tối thiểu 6 ký tự)"}
+                />
+              </div>
 
               <div className="admin-modal-actions">
                 <button type="button" className="admin-btn-cancel" onClick={() => setShowModal(false)}>
