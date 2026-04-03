@@ -9,6 +9,15 @@ const amenitySchema = new mongoose.Schema(
       type: String,
       default: ""
     },
+    type: {
+      type: String,
+      enum: ['hotel', 'room', 'both'],
+      default: 'both'
+    },
+    description: {
+      type: String,
+      default: ""
+    },
     isDeleted: {
       type: Boolean,
       default: false

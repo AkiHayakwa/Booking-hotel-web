@@ -12,7 +12,7 @@
 .admin-reviews__title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: var(--primary);
   margin-bottom: 0.25rem;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .admin-reviews__stats-badge {
-  background: var(--primary-color);
+  background: var(--primary);
   color: white;
   padding: 0.75rem 1.25rem;
   border-radius: 0.5rem;
@@ -82,7 +82,7 @@
 .review-hotel-name {
   font-weight: 700;
   font-size: 0.85rem;
-  color: var(--primary-color);
+  color: var(--primary);
 }
 
 .review-hotel-city {

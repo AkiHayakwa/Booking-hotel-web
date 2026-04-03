@@ -8,8 +8,7 @@ router.get('/', async function (req, res, next) {
     res.send(result)
 })
 router.post('/', CheckLogin, checkRole('admin'), async function (req, res, next) {
-    let { name, icon } = req.body;
-    let result = await amenityController.CreateAmenity(name, icon);
+    let result = await amenityController.CreateAmenity(req.body);
     res.send(result)
 })
 router.put('/:id', CheckLogin, checkRole('admin'), async function (req, res, next) {

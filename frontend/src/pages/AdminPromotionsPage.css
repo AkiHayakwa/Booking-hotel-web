@@ -12,7 +12,7 @@
 .admin-promos__title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: var(--primary);
   margin-bottom: 0.25rem;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .admin-promos__add-btn {
-  background: var(--primary-color);
+  background: var(--primary);
   color: white;
   border: none;
   padding: 0.75rem 1.25rem;
@@ -50,7 +50,7 @@
 
 .promo-info .promo-name {
   font-weight: 700;
-  color: var(--primary-color);
+  color: var(--primary);
 }
 
 .promo-info .promo-code {

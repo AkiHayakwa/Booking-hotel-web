@@ -10,7 +10,9 @@ export default function AdminAmenitiesPage() {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    icon: ''
+    icon: '',
+    type: 'both',
+    description: ''
   });
 
   const fetchData = async () => {
@@ -34,13 +36,17 @@ export default function AdminAmenitiesPage() {
       setEditingId(amenity._id);
       setFormData({
         name: amenity.name,
-        icon: amenity.icon || ''
+        icon: amenity.icon || '',
+        type: amenity.type || 'both',
+        description: amenity.description || ''
       });
     } else {
       setEditingId(null);
       setFormData({
         name: '',
-        icon: ''
+        icon: '',
+        type: 'both',
+        description: ''
       });
     }
     setShowModal(true);
@@ -130,8 +136,8 @@ export default function AdminAmenitiesPage() {
                   <th>STT</th>
                   <th>Icon Preview</th>
                   <th>Tên tiện nghi / Icon Code</th>
-                  <th>Ngày tạo</th>
-                  <th>Cập nhật lần cuối</th>
+                  <th>Phân loại</th>
+                  <th>Mô tả</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
@@ -157,8 +163,16 @@ export default function AdminAmenitiesPage() {
                           )}
                         </div>
                       </td>
-                      <td>{new Date(a.createdAt).toLocaleDateString('vi-VN')}</td>
-                      <td>{new Date(a.updatedAt).toLocaleDateString('vi-VN')}</td>
+                      <td>
+                        <div style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', display: 'inline-block', fontSize: '0.8rem', fontWeight: 'bold', backgroundColor: a.type === 'hotel' ? '#e0f2fe' : a.type === 'room' ? '#fef3c7' : '#e0e7ff', color: a.type === 'hotel' ? '#0369a1' : a.type === 'room' ? '#b45309' : '#4338ca' }}>
+                          {a.type === 'hotel' ? 'Khách sạn' : a.type === 'room' ? 'Phòng' : 'Chung'}
+                        </div>
+                      </td>
+                      <td>
+                        <p style={{ fontSize: '0.85rem', color: '#64748b', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {a.description || '---'}
+                        </p>
+                      </td>
                       <td>
                         <div className="admin-table-actions">
                           <button className="admin-table-btn" title="Edit" onClick={() => handleOpenModal(a)}>
@@ -215,14 +229,39 @@ export default function AdminAmenitiesPage() {
                     Lấy mã icon tại <a href="https://fonts.google.com/icons?icon.set=Material+Symbols" target="_blank" rel="noreferrer">Google Fonts Icons</a>
                   </div>
                   
-                  {formData.icon && (
-                    <div className="icon-form-preview">
-                      <span className="material-symbols-outlined">{formData.icon}</span>
-                      <span>Preview Icon</span>
-                    </div>
-                  )}
+                    {formData.icon && (
+                      <div className="icon-form-preview">
+                        <span className="material-symbols-outlined">{formData.icon}</span>
+                        <span>Preview Icon</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="form-group full-width">
+                    <label>Phân loại tiện nghi *</label>
+                    <select 
+                      value={formData.type} 
+                      onChange={e => setFormData({...formData, type: e.target.value})}
+                      className="form-input"
+                    >
+                      <option value="both">Chung (Khách sạn & Phòng)</option>
+                      <option value="hotel">Chỉ dùng cho Khách sạn</option>
+                      <option value="room">Chỉ dùng cho Phòng</option>
+                    </select>
+                  </div>
+                  
+                  <div className="form-group full-width">
+                    <label>Mô tả chi tiết</label>
+                    <textarea 
+                      rows="3"
+                      className="form-input"
+                      style={{height: 'auto', padding: '0.75rem', resize: 'vertical'}}
+                      placeholder="Mô tả công dụng của tiện nghi này..."
+                      value={formData.description} 
+                      onChange={e => setFormData({...formData, description: e.target.value})}
+                    />
+                  </div>
                 </div>
-              </div>
 
               <div className="admin-modal__footer">
                 <button type="button" className="btn-ghost" onClick={() => setShowModal(false)}>Hủy</button>

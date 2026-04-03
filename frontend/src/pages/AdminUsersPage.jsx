@@ -55,10 +55,10 @@ export default function AdminUsersPage() {
   }, []);
 
   const SUMMARY_STATS = [
-    { icon: 'group',      label: 'Total Users',     value: stats.total.toLocaleString(),    badge: '+5.2%', up: true },
-    { icon: 'how_to_reg', label: 'Active Users',      value: stats.active.toLocaleString(),   badge: '+3.1%', up: true },
-    { icon: 'person_off', label: 'Suspended Accounts', value: stats.suspended.toLocaleString(), badge: '-2.5%', up: false },
-    { icon: 'person_add', label: 'New Sign-ups (30d)', value: 'Recently',   badge: '+12.4%', up: true },
+    { icon: 'group',      label: 'Total Users',     value: stats.total.toLocaleString() },
+    { icon: 'how_to_reg', label: 'Active Users',      value: stats.active.toLocaleString() },
+    { icon: 'person_off', label: 'Suspended Accounts', value: stats.suspended.toLocaleString() },
+    { icon: 'person_add', label: 'New Sign-ups (30d)', value: 'Recently' },
   ];
 
   const handleToggleStatus = async (id) => {
@@ -177,9 +177,6 @@ export default function AdminUsersPage() {
               <div className="admin-stat-card__icon admin-stat-card__icon--primary">
                 <span className="material-symbols-outlined">{s.icon}</span>
               </div>
-              <span className={`admin-stat-card__badge admin-stat-card__badge--${s.up ? 'up' : 'down'}`}>
-                {s.badge}
-              </span>
             </div>
             <p className="admin-stat-card__label">{s.label}</p>
             <p className="admin-stat-card__value">{s.value}</p>
