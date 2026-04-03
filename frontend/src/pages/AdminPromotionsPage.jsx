@@ -247,7 +247,7 @@ export default function AdminPromotionsPage() {
                   <label>Loại giảm giá</label>
                   <select 
                     value={formData.discountType} 
-                    onChange={e => setFormData({...formData, discountType: e.target.value})}
+                    onChange={e => setFormData({...formData, discountType: e.target.value, discountValue: ''})}
                   >
                     <option value="percentage">Phần trăm (%)</option>
                     <option value="fixed_amount">Số tiền cố định (đ)</option>
@@ -258,8 +258,20 @@ export default function AdminPromotionsPage() {
                   <input 
                     type="number" 
                     required 
+                    min={formData.discountType === 'percentage' ? 1 : 1000}
+                    max={formData.discountType === 'percentage' ? 100 : undefined}
                     value={formData.discountValue} 
-                    onChange={e => setFormData({...formData, discountValue: parseInt(e.target.value)})} 
+                    onChange={e => {
+                        e.target.setCustomValidity(''); 
+                        setFormData({...formData, discountValue: e.target.value ? parseInt(e.target.value) : ''});
+                    }}
+                    onInvalid={e => {
+                        if (formData.discountType === 'percentage') {
+                            e.target.setCustomValidity('Phần trăm giảm phải từ 1% đến 100%');
+                        } else {
+                            e.target.setCustomValidity('Số tiền giảm trực tiếp phải từ 1,000đ trở lên');
+                        }
+                    }}
                   />
                 </div>
                 <div className="form-group">
@@ -276,6 +288,7 @@ export default function AdminPromotionsPage() {
                   <input 
                     type="date" 
                     required 
+                    min={formData.startDate}
                     value={formData.endDate} 
                     onChange={e => setFormData({...formData, endDate: e.target.value})} 
                   />
