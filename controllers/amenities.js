@@ -5,14 +5,24 @@ module.exports = {
         return await amenityModel.find({ isDeleted: false })
     },
     CreateAmenity: async function (body) {
-        let newItem = new amenityModel({
-            name: body.name,
-            icon: body.icon || "",
-            type: body.type || 'both',
-            description: body.description || ""
-        });
-        await newItem.save();
-        return newItem;
+        try {
+            if (!body || !body.name) {
+                let error = new Error("Amenity name is required");
+                error.status = 400;
+                throw error;
+            }
+            let newItem = new amenityModel({
+                name: body.name,
+                icon: body.icon || "",
+                type: body.type || 'both',
+                description: body.description || ""
+            });
+            await newItem.save();
+            return newItem;
+        } catch (error) {
+            console.error("Error in CreateAmenity:", error.message);
+            throw error;
+        }
     },
     UpdateAmenity: async function (id, body) {
         try {
