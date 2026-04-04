@@ -7,6 +7,7 @@ module.exports = {
         return await reviewModel.find({ isDeleted: false })
             .populate('user', 'username fullName avatarUrl')
             .populate('hotel', 'name city')
+            .populate({ path: 'booking', populate: { path: 'rooms', populate: { path: 'roomType' } } })
             .sort({ createdAt: -1 })
     },
     CreateReview: async function (userId, hotelId, bookingId, rating, comment) {
@@ -46,7 +47,7 @@ module.exports = {
     GetMyReviews: async function (userId) {
         return await reviewModel.find({ user: userId, isDeleted: false })
             .populate('hotel', 'name city')
-            .populate({ path: 'booking', populate: { path: 'room', populate: { path: 'roomType' } } })
+            .populate({ path: 'booking', populate: { path: 'rooms', populate: { path: 'roomType' } } })
     },
     // Lấy danh sách booking đã checked_out và chưa được review (eligible to review)
     GetEligibleBookings: async function (userId, hotelId) {
